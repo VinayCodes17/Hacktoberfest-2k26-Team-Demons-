@@ -1,7 +1,7 @@
 <div align="center">
 
-# 🎃 Hacktoberfest 2k26 · Team Demons 👿
-### 🚀 PS4 — VYOM+ Intelligent Voucher Classification Using Open-Source LLMs
+#  Hacktoberfest 2k26 · Team Demons 
+###  PS4 — VYOM+ Intelligent Voucher Classification Using Open-Source LLMs
 
 [![Hacktoberfest](https://img.shields.io/badge/Event-Hacktoberfest_2k26-FF6B00?style=for-the-badge&logo=hacktoberfest&logoColor=white)](#)
 [![Team](https://img.shields.io/badge/Team-Demons-DC2626?style=for-the-badge)](#)
@@ -13,15 +13,15 @@
 <table>
   <thead>
     <tr align="center">
-      <th width="200">🎖️ Role</th>
-      <th width="320">👤 Member Name</th>
-      <th width="240">🆔 Scholar ID / Roll No</th>
+      <th width="200"> Role</th>
+      <th width="320"> Member Name</th>
+      <th width="240"> Scholar ID / Roll No</th>
     </tr>
   </thead>
   <tbody>
     <tr align="center">
       <td>
-        <h3 style="margin: 4px 0;">👑 <b>TEAM LEAD</b></h3>
+        <h3 style="margin: 4px 0;"> <b>TEAM LEAD</b></h3>
       </td>
       <td>
         <h2 style="margin: 4px 0;"><ins><b>Vinay Kumrawat</b></ins></h2>
