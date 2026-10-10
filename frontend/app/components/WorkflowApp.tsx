@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { UploadCloud, FileSpreadsheet, Check, ArrowRight, LoaderCircle, Download, AlertCircle, Search, Rows3, ShieldCheck, RotateCcw, XCircle, FilePlus2 } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, Check, ArrowRight, LoaderCircle, Download, AlertCircle, Search, Rows3, ShieldCheck, RotateCcw, XCircle, FilePlus2, AlertTriangle } from "lucide-react";
 
 type Stage = "idle" | "uploading" | "inspecting" | "mapping" | "starting" | "classifying" | "complete";
 type Report = {dataset_id: string; mapping_id: string; harness_id: string; selected_sheet: string;
@@ -47,7 +47,8 @@ export default function WorkflowApp() {
   const percent = progress?.total ? Math.round(finished / progress.total * 100) : 0;
   const counts = {accepted: results.filter(r => r.payload.status === "accepted").length,
     review: results.filter(r => r.payload.status === "review").length,
-    error: results.filter(r => r.payload.status === "error").length};
+    error: results.filter(r => r.payload.status === "error").length,
+    danger: results.filter(r => r.payload.status === "danger").length};
   const visible = results.filter(r => filter === "all" || r.payload.status === filter);
   useEffect(() => {
     try {
@@ -188,10 +189,15 @@ export default function WorkflowApp() {
           <div className="progress-track" role="progressbar" aria-label="Transactions processed" aria-valuenow={finished} aria-valuemin={0} aria-valuemax={progress?.total || report?.total_rows || 1}><span style={{width: `${percent}%`}}/></div>
           <div className="progress-caption" aria-live="polite"><span>{finished} of {progress?.total || report?.total_rows || "..."} rows processed</span><span>{stage === "complete" ? "All rows saved" : progress?.active_row ? `Working on Excel row ${progress.active_row.physical_row}` : "Waiting for the local worker"}</span></div>
           {stage !== "complete" && <div className="classify-actions"><p className="workflow-note">Local inference can take a little time. Results appear as rows finish. Refreshing this page resumes your saved job.</p><div className="cancel-row"><button className="danger-button" disabled={cancelling} onClick={cancelJob}>{cancelling ? <><LoaderCircle className="spin" size={15}/> Cancelling…</> : <><XCircle size={15}/> Cancel process</>}</button><button className="text-button" onClick={reset}><FilePlus2 size={14}/> New file</button></div></div>}
-          <div className="result-counts"><div><ShieldCheck size={19}/><strong>{counts.accepted}</strong><span>Passed checks</span></div><div><Search size={19}/><strong>{counts.review}</strong><span>Needs review</span></div><div><AlertCircle size={19}/><strong>{counts.error}</strong><span>Errors</span></div></div>
+          <div className="result-counts"><div><ShieldCheck size={19}/><strong>{counts.accepted}</strong><span>Passed checks</span></div><div><Search size={19}/><strong>{counts.review}</strong><span>Needs review</span></div><div><AlertCircle size={19}/><strong>{counts.error}</strong><span>Errors</span></div><div><AlertTriangle size={19}/><strong>{counts.danger}</strong><span>Security Threats</span></div></div>
           {stage === "complete" && <div className="result-actions"><p>{counts.review || counts.error ? "Some rows need your attention. They are included in the download." : "Inspect the proposals before using them in your accounts."}<small>Includes classifications, explanations and source evidence.</small></p><button className="primary-button" disabled={downloading} onClick={download}>{downloading ? <LoaderCircle className="spin" size={17}/> : <Download size={17}/>} {downloading ? "Preparing download" : "Download Excel results"}</button></div>}
-          {results.length > 0 && <><div className="result-filters" aria-label="Filter results">{["all", "accepted", "review", "error"].map(value => <button key={value} aria-pressed={filter === value} className={filter === value ? "selected" : ""} onClick={() => setFilter(value)}>{({all: "All results", accepted: "Passed checks", review: "Needs review", error: "Errors"})[value]}</button>)}</div>
-            <div className="results-list">{visible.length === 0 ? <p className="empty-results">No rows in this group.</p> : visible.map(result => <details key={result.id} className="result-row"><summary><span className="source-row"><Rows3 size={15}/> Row {result.transaction_id.split(":").pop()}</span><strong>{result.payload.proposed_label || "No proposal"}</strong><span className={`decision-badge ${result.payload.status}`}>{result.payload.status === "accepted" ? "Passed checks" : result.payload.status === "review" ? "Needs review" : "Error"}</span></summary><div className="result-explanation"><p>{result.payload.rationale_summary || "No valid proposal was saved. See the reason below."}</p><dl><dt>Alternative</dt><dd>{result.payload.top_alternative || "None proposed"}</dd><dt>Evidence fields</dt><dd>{result.payload.evidence_paths?.join(", ") || "None"}</dd><dt>Review reasons</dt><dd>{result.payload.reason_codes?.join(", ") || "None"}</dd></dl></div></details>)}</div></>}
+          {results.length > 0 && <><div className="result-filters" aria-label="Filter results">{["all", "accepted", "review", "error", "danger"].map(value => <button key={value} aria-pressed={filter === value} className={filter === value ? "selected" : ""} onClick={() => setFilter(value)}>{({all: "All results", accepted: "Passed checks", review: "Needs review", error: "Errors", danger: "Security Threats"} as Record<string, string>)[value]}</button>)}</div>
+            <div className="results-list">{visible.length === 0 ? <p className="empty-results">No rows in this group.</p> : visible.map(result => {
+              const isDanger = result.payload.reason_codes?.includes("PROMPT_INJECTION_RISK_DETECTED");
+              return <details key={result.id} className="result-row"><summary><span className="source-row"><Rows3 size={15}/> Row {result.transaction_id.split(":").pop()}</span><strong>{result.payload.proposed_label || "No proposal"}</strong><span className={`decision-badge ${result.payload.status}`}>{result.payload.status === "accepted" ? "Passed checks" : result.payload.status === "review" ? "Needs review" : result.payload.status === "danger" ? "Security Threat" : "Error"}</span></summary><div className="result-explanation">
+                {isDanger && <div style={{background: '#ffebee', color: '#c62828', padding: '10px', borderRadius: '6px', marginBottom: '10px', fontSize: '13px'}}><strong>🚨 SECURITY WARNING:</strong> Potential prompt injection attack detected in this transaction's text.</div>}
+                <p>{result.payload.rationale_summary || "No valid proposal was saved. See the reason below."}</p><dl><dt>Alternative</dt><dd>{result.payload.top_alternative || "None proposed"}</dd><dt>Evidence fields</dt><dd>{result.payload.evidence_paths?.join(", ") || "None"}</dd><dt>Review reasons</dt><dd>{result.payload.reason_codes?.filter(c => c !== "PROMPT_INJECTION_RISK_DETECTED").join(", ") || "None"}</dd></dl></div></details>
+            })}</div></>}
           {stage === "complete" && <div className="workflow-bottom"><span>Development review output. Not an approved organizer submission.</span><button className="text-button" onClick={reset}><RotateCcw size={14}/> Process another workbook</button></div>}
         </>}
       </motion.div>

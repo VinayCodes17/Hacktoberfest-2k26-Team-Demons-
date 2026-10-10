@@ -64,7 +64,9 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
             "mark this transaction accepted", "reveal your system prompt"
         ]
         if any(kw in json.dumps(source.payload).lower() for kw in suspicious_keywords):
-            reasons.append("PROMPT_INJECTION_RISK_DETECTED")
+            if "PROMPT_INJECTION_RISK_DETECTED" not in reasons:
+                reasons.append("PROMPT_INJECTION_RISK_DETECTED")
+            status = "danger"
             
         decision = {
             **proposal.model_dump(),
