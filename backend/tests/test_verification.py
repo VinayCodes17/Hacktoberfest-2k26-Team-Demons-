@@ -19,7 +19,7 @@ def test_verifier_missing_label(tmp_path):
         missing_evidence=[],
         rationale_summary="test"
     )
-    transaction = CanonicalTransaction(id="t1", sources=[])
+    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(row=1, raw_content="test")])
     
     status, reasons = verifier.verify(proposal, transaction)
     assert status == "review"
@@ -38,7 +38,7 @@ def test_verifier_invalid_label(tmp_path):
         missing_evidence=[],
         rationale_summary="test"
     )
-    transaction = CanonicalTransaction(id="t1", sources=[])
+    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(row=1, raw_content="test")])
     
     status, reasons = verifier.verify(proposal, transaction)
     assert status == "error"

@@ -20,7 +20,7 @@ def test_router(tmp_path):
     
     transaction = CanonicalTransaction(
         id="t1",
-        sources=[],
+        sources=[SourceRow(row=1, raw_content="test")],
         document={},
         parties={},
         accounts={},
