@@ -59,14 +59,20 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
             status, reasons = "review", ["NO_OBSERVED_EVIDENCE"]
             
         suspicious_keywords = [
-            "ignore previous instructions", "system override", "override your instructions",
+            "ignore previous", "system override", "override your instructions",
             "developer message", "return this exact json", "disable verification",
-            "mark this transaction accepted", "reveal your system prompt"
+            "mark this transaction accepted", "reveal your system prompt",
+            "disregard previous", "ignore all instructions", "bypass security",
+            "you are now a", "do not follow the policy"
         ]
-        if any(kw in json.dumps(source.payload).lower() for kw in suspicious_keywords):
+        payload_lower = json.dumps(source.payload).lower()
+        matched_keywords = [kw for kw in suspicious_keywords if kw in payload_lower]
+        if matched_keywords:
+            status = "danger"
             if "PROMPT_INJECTION_RISK_DETECTED" not in reasons:
                 reasons.append("PROMPT_INJECTION_RISK_DETECTED")
-            status = "danger"
+            for kw in matched_keywords:
+                reasons.append(f"INJECTION_ATTACK_KEYWORD: '{kw}'")
             
         decision = {
             **proposal.model_dump(),
@@ -78,8 +84,8 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
             "verification_version": VERIFIER_VERSION,
             "prompt_version": "direct-v3",
         }
-        if status == "error":
-            error_detail = f"INVALID_PROPOSAL: {', '.join(reasons)}"
+        if status == "error" or (status == "review" and attempt < settings.max_model_calls_per_row):
+            error_detail = f"INVALID_PROPOSAL: {', '.join(reasons)}" if status == "error" else f"UNCERTAIN_PROPOSAL: {', '.join(reasons)}"
             record_prediction(
                 engine, job.id, source.id, attempt, error=error_detail, payload=decision, worker_id=worker_id
             )

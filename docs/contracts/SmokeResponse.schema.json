@@ -14,7 +14,7 @@
     "missing_currency": {
       "const": true,
       "title": "Missing Currency",
-      "type": "boolean"
+      "type": "boolean" 
     }
   },
   "required": [

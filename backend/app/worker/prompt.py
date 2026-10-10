@@ -50,12 +50,13 @@ contradictory. Cite exact evidence keys from TRANSACTION DATA, not invented keys
 
 CRITICAL DISTINCTIONS:
 - Order vs Invoice: "Sales Order" and "Purchase Order" are commitments before delivery/payment. Look for "Order Date", "Promised Delivery", or "Expected Arrival". "Sales" and "Purchase" require actual delivery, billing, or GRN references.
-- Returns: "Sales Return" implies items returning from customer (Credit Note). "Purchase Return" implies returning items to supplier (Debit Note or Rejection Out).
-- Material: "Material In" / "Material Out" are internal physical movements without financial sales/purchase logic.
-- Job Work: "Job Work In" (receiving materials to process) vs "Job Work Out" (sending materials to subcontractor).
+- Returns vs Rejections: "Sales Return" / "Purchase Return" typically imply financial adjustments (Credit/Debit Notes) after invoicing. "Rejection In" / "Rejection Out" are physical rejections during GRN or QC, often before invoicing. Look at who is returning to whom and the presence of Rejection Notes.
+- Material: "Material In" / "Material Out" are internal physical movements without financial sales/purchase logic. If there is a "Supplier" or "Customer" with an amount, it is likely NOT Material In/Out. Look for "Storage Facility" or "Stock Adj ID".
+- Job Work: "Job Work In" (receiving materials to process from a principal) vs "Job Work Out" (sending materials to subcontractor). Look for "Processor", "Principal", "Subcontractor", or "Processing Rate".
+- Stock: "Physical Stock" is a point-in-time inventory count ("Counted Quantity", "Book Quantity"). "Stock Journal" implies internal adjustments or transfers between locations.
 Return proposed_label (or null), top_alternative (or null), evidence_paths,
 missing_evidence and rationale_summary (at most 1000 characters).
-Evidence paths must reference observed transaction evidence. Preserve missing,
+Evidence paths must reference observed transaction evidence EXACTLY as written in the keys. Preserve missing,
 false and zero as distinct states. This is development policy, not submission
 approval; synthetic examples are not verified labels.
 

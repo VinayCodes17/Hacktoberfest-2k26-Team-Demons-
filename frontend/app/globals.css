@@ -164,8 +164,8 @@ h1 { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(26px, 2.7v
 .progress-caption { display:flex; justify-content:space-between; gap:15px; font-size:11px; color:#7c756a; }
 .result-counts { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:24px 0; }
 .result-counts > div { display:grid; grid-template-columns:24px 1fr; gap:8px 12px; border:1px solid #e7e3de; padding:16px; border-radius:9px; color:#756959; }
-.result-counts > div:nth-child(2) { color:#a08144; }
-.result-counts > div:nth-child(3) { color:#a37164; }
+.result-counts > div:nth-child(2) { color:#059669; }
+.result-counts > div:nth-child(3) { color:#dc2626; }
 .result-counts > div:nth-child(4) { color:#c52828; }
 .result-counts strong { font-weight:700; font-size:26px; line-height:1; }
 .result-counts span { grid-column:2; font-size:10px; }
