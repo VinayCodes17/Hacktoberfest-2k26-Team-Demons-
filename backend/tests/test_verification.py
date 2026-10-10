@@ -1,8 +1,10 @@
 import pytest
-from app.schemas import ModelProposal, CanonicalTransaction, FinancialSignal, Decision
+
 from app.routing.ontology import OntologyProvider
-from app.verification.verifier import Verifier
+from app.schemas import CanonicalTransaction, Decision, ModelProposal
 from app.verification.review_service import ReviewService
+from app.verification.verifier import Verifier
+
 
 def test_verifier_missing_label(tmp_path):
     ontology_path = tmp_path / "ontology.json"

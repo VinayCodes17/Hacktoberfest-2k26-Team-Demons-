@@ -1,6 +1,8 @@
 import pytest
+
 from app.repair.miner import FailureMiner
 from app.repair.proposer import PolicyProposer
+
 
 def test_miner_semantic_errors():
     miner = FailureMiner()

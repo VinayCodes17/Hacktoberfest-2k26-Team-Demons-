@@ -1,7 +1,7 @@
-import pytest
-from app.schemas import GateConfig, HarnessBundle
-from app.repair.regression import RegressionGate
 from app.repair.activation import HarnessManager
+from app.repair.regression import RegressionGate
+from app.schemas import GateConfig, HarnessBundle
+
 
 def test_regression_gate_passes():
     gate = RegressionGate()
@@ -73,7 +73,7 @@ def test_harness_activation_and_rollback():
     assert manager.active_bundle_id == "v1"
     assert ev1.action == "activate"
     
-    ev2 = manager.activate_bundle("v2", "admin")
+    manager.activate_bundle("v2", "admin")
     assert manager.active_bundle_id == "v2"
     
     ev3 = manager.rollback("v1", "admin")

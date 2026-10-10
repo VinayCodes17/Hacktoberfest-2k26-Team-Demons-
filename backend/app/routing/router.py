@@ -1,5 +1,6 @@
-from app.schemas import CanonicalTransaction, FinancialSignal
 from app.routing.ontology import OntologyProvider
+from app.schemas import CanonicalTransaction
+
 
 class FinancialRouter:
     def __init__(self, ontology: OntologyProvider):
@@ -10,7 +11,6 @@ class FinancialRouter:
         Returns candidate voucher names based on financial signals.
         Preserves rivals and uses all labels under weak evidence.
         """
-        candidates = set()
         signals = transaction.signals
         
         # If no signals or very weak evidence, return all labels as fallback

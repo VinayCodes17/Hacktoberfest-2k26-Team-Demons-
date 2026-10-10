@@ -1,6 +1,8 @@
 import datetime
 from uuid import uuid4
-from app.schemas import HarnessBundle, ActivationEvent
+
+from app.schemas import ActivationEvent, HarnessBundle
+
 
 class HarnessManager:
     def __init__(self):

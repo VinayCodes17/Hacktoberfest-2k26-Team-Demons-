@@ -1,6 +1,8 @@
 from typing import Literal
-from app.schemas import ModelProposal, CanonicalTransaction, OntologyEntry
+
 from app.routing.ontology import OntologyProvider
+from app.schemas import CanonicalTransaction, ModelProposal
+
 
 class Verifier:
     def __init__(self, ontology: OntologyProvider):

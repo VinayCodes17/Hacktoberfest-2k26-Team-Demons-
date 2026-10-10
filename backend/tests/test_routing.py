@@ -1,8 +1,7 @@
-import pytest
-from pathlib import Path
 from app.routing.ontology import OntologyProvider
 from app.routing.router import FinancialRouter
 from app.schemas import CanonicalTransaction
+
 
 def test_ontology_provider(tmp_path):
     ontology_path = tmp_path / "ontology.json"

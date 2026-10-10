@@ -1,8 +1,8 @@
 import hashlib
 import json
-import os
 from pathlib import Path
 from typing import Any
+
 
 class InferenceCache:
     def __init__(self, cache_dir: str = ".cache/inference"):

@@ -1,5 +1,5 @@
-import pytest
 from app.worker.cache import InferenceCache
+
 
 def test_inference_cache(tmp_path):
     cache = InferenceCache(cache_dir=str(tmp_path))

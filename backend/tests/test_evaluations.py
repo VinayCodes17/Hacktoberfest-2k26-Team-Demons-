@@ -1,8 +1,8 @@
-import pytest
-from app.evaluations.metrics import calculate_metrics
 from app.evaluations.manifest import create_manifest
+from app.evaluations.metrics import calculate_metrics
 from app.evaluations.runner import EvaluationRunner
 from app.schemas import EvaluationRun
+
 
 def test_calculate_metrics():
     predictions = [

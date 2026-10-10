@@ -1,5 +1,6 @@
 from app.schemas import GateConfig, RegressionReport
 
+
 class RegressionGate:
     def evaluate_candidate(
         self, 

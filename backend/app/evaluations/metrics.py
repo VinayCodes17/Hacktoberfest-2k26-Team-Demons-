@@ -1,4 +1,3 @@
-import hashlib
 
 def calculate_metrics(predictions: list[dict], true_labels: dict[str, str]) -> dict[str, float]:
     """

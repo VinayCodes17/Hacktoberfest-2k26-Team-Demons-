@@ -1,6 +1,7 @@
 import hashlib
 from typing import Literal
 
+
 def get_text_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 

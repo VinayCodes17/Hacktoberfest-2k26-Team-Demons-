@@ -14,7 +14,6 @@ from app.persistence.models import (
     Dataset,
     HarnessRecord,
     Job,
-    JobRow,
     MappingRecord,
     ModelAttempt,
     Prediction,

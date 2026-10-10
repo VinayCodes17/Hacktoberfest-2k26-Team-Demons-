@@ -1,53 +1,75 @@
-from app.verification.verifier import verify_proposal
+from pathlib import Path
+from app.verification.verifier import Verifier
+from app.routing.ontology import OntologyProvider
+from app.schemas import ModelProposal, CanonicalTransaction, SourceRow, FinancialSignal
 
 def test_verifier_accepts_valid_proposal(monkeypatch):
-    monkeypatch.setattr("app.verification.verifier.load_ontology", lambda: [{"name": "Contra"}, {"name": "Payment"}])
+    monkeypatch.setattr("app.routing.ontology.OntologyProvider.get_by_name", lambda self, name: {"name": name})
     
-    proposal = {
-        "proposed_label": "Contra",
-        "top_alternative": "Payment",
-        "evidence_paths": ["ownership_relation"],
-        "missing_evidence": []
-    }
-    transaction = {"ownership_relation": "same_organization"}
+    verifier = Verifier(OntologyProvider(Path("dummy.json")))
+    proposal = ModelProposal(
+        proposed_label="Contra",
+        top_alternative="Payment",
+        evidence_paths=["ownership_relation"],
+        missing_evidence=[],
+        rationale_summary="some reason"
+    )
+    transaction = CanonicalTransaction(
+        id="123",
+        sources=[SourceRow(
+            dataset_id="mock", sheet="mock", physical_row=1,
+            source_sha256="a" * 64, cells=[]
+        )],
+        signals=[FinancialSignal(name="ownership_relation", value="same", status="observed", source_paths=["col1"])],
+        missing_paths=[]
+    )
     
-    decision = verify_proposal(proposal, transaction)
-    
-    assert decision["status"] == "accepted"
-    assert decision["reason_codes"] == []
-    assert decision["candidates"] == ["Contra", "Payment"]
-    assert decision["checked_evidence_paths"] == ["ownership_relation"]
+    status, reasons = verifier.verify(proposal, transaction)
+    assert status == "accepted"
+    assert reasons == []
 
 def test_verifier_flags_invalid_label(monkeypatch):
-    monkeypatch.setattr("app.verification.verifier.load_ontology", lambda: [{"name": "Payment"}])
+    monkeypatch.setattr("app.routing.ontology.OntologyProvider.get_by_name", lambda self, name: None)
     
-    proposal = {
-        "proposed_label": "InvalidCategory",
-        "evidence_paths": ["amount"]
-    }
+    verifier = Verifier(OntologyProvider(Path("dummy.json")))
+    proposal = ModelProposal(
+        proposed_label="InvalidCategory",
+        top_alternative="Payment",
+        evidence_paths=["amount"],
+        missing_evidence=[],
+        rationale_summary="some reason"
+    )
+    transaction = CanonicalTransaction(
+        id="1",
+        sources=[SourceRow(
+            dataset_id="mock", sheet="mock", physical_row=1,
+            source_sha256="a" * 64, cells=[]
+        )]
+    )
     
-    decision = verify_proposal(proposal, {"amount": "100"})
-    
-    assert decision["status"] == "error"
-    assert "INVALID_PROPOSED_LABEL" in decision["reason_codes"]
-    assert decision["proposed_label"] is None
+    status, reasons = verifier.verify(proposal, transaction)
+    assert status == "error"
+    assert "INVALID_LABEL" in reasons
 
 def test_verifier_flags_missing_evidence(monkeypatch):
-    monkeypatch.setattr("app.verification.verifier.load_ontology", lambda: [{"name": "Contra"}])
+    monkeypatch.setattr("app.routing.ontology.OntologyProvider.get_by_name", lambda self, name: {"name": name})
     
-    proposal = {
-        "proposed_label": "Contra",
-        "evidence_paths": ["fake_path"]
-    }
+    verifier = Verifier(OntologyProvider(Path("dummy.json")))
+    proposal = ModelProposal(
+        proposed_label="Contra",
+        top_alternative="Payment",
+        evidence_paths=["fake_path"],
+        missing_evidence=[],
+        rationale_summary="some reason"
+    )
+    transaction = CanonicalTransaction(
+        id="1",
+        sources=[SourceRow(
+            dataset_id="mock", sheet="mock", physical_row=1,
+            source_sha256="a" * 64, cells=[]
+        )]
+    )
     
-    decision = verify_proposal(proposal, {"amount": "100"})
-    
-    assert decision["status"] == "review"
-    assert "INVALID_EVIDENCE_PATH" in decision["reason_codes"]
-    assert "MISSING_DECISIVE_EVIDENCE" in decision["reason_codes"]
-
-def test_verifier_handles_malformed_json():
-    # If the LLM output is not even a dict
-    decision = verify_proposal("just some text", {})
-    assert decision["status"] == "error"
-    assert "INVALID_JSON_PROPOSAL" in decision["reason_codes"]
+    status, reasons = verifier.verify(proposal, transaction)
+    assert status == "error"
+    assert "UNSUPPORTED_EVIDENCE" in reasons

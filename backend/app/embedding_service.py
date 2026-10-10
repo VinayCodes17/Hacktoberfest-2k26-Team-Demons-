@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
             config_kwargs={"vision_config": None, "audio_config": None},
             model_kwargs={"torch_dtype": torch.float32},
         )
-        config = model[0].auto_model.config
+        config = model[0].auto_model.config  # type: ignore
         if (
             getattr(config, "vision_config", None) is not None
             or getattr(config, "audio_config", None) is not None

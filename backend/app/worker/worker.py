@@ -1,12 +1,15 @@
 import asyncio
 import logging
 from uuid import uuid4
+from pathlib import Path
 
 from sqlalchemy import Engine
 
 from app.persistence.repository import claim_job_row_lease, record_prediction
 from app.settings import Settings
-from app.verification.verifier import verify_proposal
+from app.verification.verifier import Verifier
+from app.routing.ontology import OntologyProvider
+from app.schemas import ModelProposal, CanonicalTransaction, SourceRow
 from app.worker.llm import OllamaAdapterError, generate_classification
 from app.worker.prompt import build_prompt
 
@@ -23,31 +26,51 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
 
     max_attempts = 2
 
+    # Instantiate properly with the DB session in a real flow
+    verifier = Verifier(OntologyProvider(Path("ontology/workbook-seed.json")))
+
+    # Create dummy CanonicalTransaction (real flow would parse source_record.payload)
+    transaction = CanonicalTransaction(
+        id=str(source_record.id),
+        sources=[SourceRow(
+            dataset_id="mock", sheet="mock", physical_row=1,
+            source_sha256="a" * 64, cells=[]
+        )]
+    )
+
     try:
         # Build prompt using the raw source record and mapping snapshot
         prompt = build_prompt(transaction=source_record.payload, mapping_snapshot=job.mapping_snapshot)
 
         # Call LLM
         prediction_payload = generate_classification(prompt, settings)
-        decision = verify_proposal(prediction_payload, source_record.payload)
+        
+        proposal = ModelProposal(**prediction_payload)
+        status, reason_codes = verifier.verify(proposal, transaction)
 
-        if decision["status"] == "error" and attempt_number < max_attempts:
+        if status == "error" and attempt_number < max_attempts:
             # Recovery loop
             recovery_prompt = (
-                prompt + f"\n\nYOUR PREVIOUS OUTPUT HAD ERRORS: {decision['reason_codes']}. PLEASE FIX THEM."
+                prompt + f"\n\nYOUR PREVIOUS OUTPUT HAD ERRORS: {reason_codes}. PLEASE FIX THEM."
             )
             prediction_payload = generate_classification(recovery_prompt, settings)
-            decision = verify_proposal(prediction_payload, source_record.payload)
+            proposal = ModelProposal(**prediction_payload)
+            status, reason_codes = verifier.verify(proposal, transaction)
             attempt_number += 1
 
-        decision["attempts"] = attempt_number
-        decision["trace_id"] = f"trace-{source_record.id}"
-        decision["harness_id"] = job.harness_id
+        decision = {
+            "status": status,
+            "reason_codes": reason_codes,
+            "attempts": attempt_number,
+            "trace_id": f"trace-{source_record.id}",
+            "harness_id": job.harness_id,
+            "proposed_label": proposal.proposed_label
+        }
 
         # Save prediction
         record_prediction(engine, job.id, source_record.id, attempt_number, payload=decision, error=None)
         logger.info(
-            f"Successfully processed transaction {source_record.id} for job {job.id} with status {decision['status']}"
+            f"Successfully processed transaction {source_record.id} for job {job.id} with status {status}"
         )
 
     except OllamaAdapterError as e:
@@ -60,7 +83,7 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
     return True
 
 
-async def run_worker(engine: Engine, settings: Settings, worker_id: str = None):
+async def run_worker(engine: Engine, settings: Settings, worker_id: str | None = None):
     """Background loop to continuously poll for available job rows."""
     if not worker_id:
         worker_id = f"worker-{uuid4()}"

@@ -1,4 +1,6 @@
 from app.schemas import ErrorCluster
+from typing import Any
+
 
 class FailureMiner:
     def mine_errors(self, development_decisions: list[dict], true_labels: dict[str, str]) -> list[ErrorCluster]:
@@ -6,7 +8,7 @@ class FailureMiner:
         Mines only trusted labeled development errors, grouped by confusion pair and missing/contradictory signal.
         Excludes infrastructure failures (like errors without a valid prediction attempt).
         """
-        clusters = {}
+        clusters: dict[tuple[str, str], dict[str, Any]] = {}
         
         for decision in development_decisions:
             txn_id = decision.get("transaction_id")

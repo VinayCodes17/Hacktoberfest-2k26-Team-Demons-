@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+
 from app.schemas import OntologyEntry
+
 
 class OntologyProvider:
     def __init__(self, ontology_path: Path):

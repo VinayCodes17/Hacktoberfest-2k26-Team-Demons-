@@ -1,4 +1,5 @@
-from app.schemas import ErrorCluster, RepairCandidate, PolicyPatch
+from app.schemas import ErrorCluster, PolicyPatch, RepairCandidate
+
 
 class PolicyProposer:
     def __init__(self, locked_paths: list[str]):
@@ -14,14 +15,14 @@ class PolicyProposer:
         if not cluster.case_ids:
             raise ValueError("Unconfirmed error: no case IDs")
             
-        target_path = patch_data.get("target_path")
+        target_path: str = patch_data.get("target_path", "")
         if any(locked in target_path for locked in self.locked_paths):
             raise ValueError(f"Banned patch path: {target_path} is locked.")
             
         patch = PolicyPatch(
             patch_type=patch_data["patch_type"],
             target_path=target_path,
-            diff_content=patch_data["diff_content"]
+            diff_content=patch_data.get("diff_content", "")
         )
         
         return RepairCandidate(

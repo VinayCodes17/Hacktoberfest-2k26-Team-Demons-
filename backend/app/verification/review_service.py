@@ -1,6 +1,8 @@
 import datetime
-from app.schemas import Review, Decision
+
 from app.routing.ontology import OntologyProvider
+from app.schemas import Decision, Review
+
 
 class ReviewService:
     def __init__(self, ontology: OntologyProvider):

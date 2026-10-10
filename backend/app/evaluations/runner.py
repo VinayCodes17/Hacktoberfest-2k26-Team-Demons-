@@ -1,5 +1,6 @@
-from app.schemas import EvaluationRun
 from app.evaluations.metrics import calculate_metrics
+from app.schemas import EvaluationRun
+
 
 class EvaluationRunner:
     def __init__(self):
@@ -14,6 +15,6 @@ class EvaluationRunner:
         
         # A full system would simulate permutations here for robustness testing (metamorphic tests).
         # We also record metrics.
-        eval_run.metrics = metrics
+        eval_run.metrics = {k: v for k, v in metrics.items()}
         eval_run.status = "completed"
         return eval_run

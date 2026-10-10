@@ -1,5 +1,6 @@
 from app.retrieval.encoder import TextEncoder
 
+
 class ExampleRetriever:
     """
     Retrieves trusted exemplars and development errors based on semantic search.
@@ -14,7 +15,7 @@ class ExampleRetriever:
         Never use the unknown query gold label to choose exemplars.
         Fallback to returning no examples if Qdrant isn't ready or memory is empty.
         """
-        vector = self.encoder.encode(query, kind="query")
+        self.encoder.encode(query, kind="query")
         
         # Empty reference memory is a normal no-retrieval mode.
         return []
