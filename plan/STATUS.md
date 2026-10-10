@@ -41,7 +41,7 @@ Continue independent scaffolding/contract work when a specific input is missing.
 | P08 | Implemented | `docs/pr-drafts/P08.md` |
 | P09 | Implemented | `docs/pr-drafts/P09.md` |
 | P10 | Implemented | `docs/pr-drafts/P10.md` |
-| P11 | Optional, pending | None |
+| P11 | Implemented | `docs/pr-drafts/P11.md` |
 
 ## Latest handoff
 
@@ -81,3 +81,6 @@ Is phase mein proposed repair ko regression tests ke baad hi activate karna poss
 
 ## P10 Summary
 Is phase mein poora project target laptop par run karke package kiya. Demo, screenshots aur metrics actual execution se hain; setup steps aur limitations bhi documented hain.
+
+## P11 Summary
+Is optional phase mein measured bottleneck par improvement test kiya. Jo experiment useful nikla wahi retain kiya; extra technology sirf naam ke liye add nahi ki. (Caching full inference requests implemented).
