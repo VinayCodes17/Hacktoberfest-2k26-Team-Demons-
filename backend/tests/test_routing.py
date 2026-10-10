@@ -1,6 +1,6 @@
 from app.routing.ontology import OntologyProvider
 from app.routing.router import FinancialRouter
-from app.schemas import CanonicalTransaction
+from app.schemas import CanonicalTransaction, SourceRow
 
 
 def test_ontology_provider(tmp_path):
@@ -9,7 +9,9 @@ def test_ontology_provider(tmp_path):
     
     provider = OntologyProvider(ontology_path)
     assert len(provider.get_all()) == 1
-    assert provider.get_by_name("Payment").family == "Banking"
+    payment = provider.get_by_name("Payment")
+    assert payment is not None
+    assert payment.family == "Banking"
     assert provider.get_by_family("Banking")[0].name == "Payment"
 
 def test_router(tmp_path):
@@ -20,7 +22,7 @@ def test_router(tmp_path):
     
     transaction = CanonicalTransaction(
         id="t1",
-        sources=[SourceRow(row=1, raw_content="test")],
+        sources=[SourceRow(dataset_id="mock", sheet="mock", physical_row=1, source_sha256="a" * 64, cells=[])],
         document={},
         parties={},
         accounts={},

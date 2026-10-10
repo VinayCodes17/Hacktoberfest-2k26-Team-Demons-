@@ -1,7 +1,7 @@
 import pytest
 
 from app.routing.ontology import OntologyProvider
-from app.schemas import CanonicalTransaction, Decision, ModelProposal
+from app.schemas import CanonicalTransaction, Decision, ModelProposal, SourceRow
 from app.verification.review_service import ReviewService
 from app.verification.verifier import Verifier
 
@@ -19,7 +19,7 @@ def test_verifier_missing_label(tmp_path):
         missing_evidence=[],
         rationale_summary="test"
     )
-    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(row=1, raw_content="test")])
+    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(dataset_id="mock", sheet="mock", physical_row=1, source_sha256="a" * 64, cells=[])])
     
     status, reasons = verifier.verify(proposal, transaction)
     assert status == "review"
@@ -38,7 +38,7 @@ def test_verifier_invalid_label(tmp_path):
         missing_evidence=[],
         rationale_summary="test"
     )
-    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(row=1, raw_content="test")])
+    transaction = CanonicalTransaction(id="t1", sources=[SourceRow(dataset_id="mock", sheet="mock", physical_row=1, source_sha256="a" * 64, cells=[])])
     
     status, reasons = verifier.verify(proposal, transaction)
     assert status == "error"
@@ -73,6 +73,7 @@ def test_review_service(tmp_path):
         source="dashboard"
     )
     
+    assert review is not None
     assert review.reviewer_id == "user1"
     assert review.corrected_label == "Payment"
     

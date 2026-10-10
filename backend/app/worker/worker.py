@@ -31,7 +31,7 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
 
     # Create dummy CanonicalTransaction (real flow would parse source_record.payload)
     transaction = CanonicalTransaction(
-        id=str(source_record.id),
+        id=source_record.id,
         sources=[SourceRow(
             dataset_id="mock", sheet="mock", physical_row=1,
             source_sha256="a" * 64, cells=[]
