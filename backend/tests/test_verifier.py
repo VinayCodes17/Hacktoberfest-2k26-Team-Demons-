@@ -1,7 +1,9 @@
 from pathlib import Path
-from app.verification.verifier import Verifier
+
 from app.routing.ontology import OntologyProvider
-from app.schemas import ModelProposal, CanonicalTransaction, SourceRow, FinancialSignal
+from app.schemas import CanonicalTransaction, FinancialSignal, ModelProposal, SourceRow
+from app.verification.verifier import Verifier
+
 
 def test_verifier_accepts_valid_proposal(monkeypatch):
     monkeypatch.setattr("app.routing.ontology.OntologyProvider.get_by_name", lambda self, name: {"name": name})

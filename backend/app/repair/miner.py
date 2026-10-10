@@ -1,5 +1,6 @@
-from app.schemas import ErrorCluster
 from typing import Any
+
+from app.schemas import ErrorCluster
 
 
 class FailureMiner:

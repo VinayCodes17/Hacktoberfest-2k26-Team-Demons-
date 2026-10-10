@@ -1,15 +1,15 @@
 import asyncio
 import logging
-from uuid import uuid4
 from pathlib import Path
+from uuid import uuid4
 
 from sqlalchemy import Engine
 
 from app.persistence.repository import claim_job_row_lease, record_prediction
+from app.routing.ontology import OntologyProvider
+from app.schemas import CanonicalTransaction, ModelProposal, SourceRow
 from app.settings import Settings
 from app.verification.verifier import Verifier
-from app.routing.ontology import OntologyProvider
-from app.schemas import ModelProposal, CanonicalTransaction, SourceRow
 from app.worker.llm import OllamaAdapterError, generate_classification
 from app.worker.prompt import build_prompt
 
