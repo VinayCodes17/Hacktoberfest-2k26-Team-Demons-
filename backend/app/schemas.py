@@ -174,6 +174,31 @@ class RepairCandidate(Contract):
     paper_reference: str
 
 
+class GateConfig(Contract):
+    min_macro_f1_gain: float
+    max_critical_class_recall_drop: float
+    max_p95_latency_ms: int
+    minimum_label_support: int
+
+
+class RegressionReport(Contract):
+    candidate_id: Identifier
+    parent_id: Identifier
+    passed: bool
+    reasons: list[str]
+    parent_metrics: dict[str, float]
+    candidate_metrics: dict[str, float]
+
+
+class ActivationEvent(Contract):
+    id: Identifier
+    harness_id: Identifier
+    parent_id: Identifier | None
+    action: Literal["activate", "rollback"]
+    authorizer: str
+    timestamp: datetime
+
+
 class JobCreate(Contract):
     dataset_id: Identifier
     mapping_id: Identifier

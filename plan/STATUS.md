@@ -39,7 +39,7 @@ Continue independent scaffolding/contract work when a specific input is missing.
 | P06 | Implemented | `docs/pr-drafts/P06.md` |
 | P07 | Implemented | `docs/pr-drafts/P07.md` |
 | P08 | Implemented | `docs/pr-drafts/P08.md` |
-| P09 | Pending | None |
+| P09 | Implemented | `docs/pr-drafts/P09.md` |
 | P10 | Pending | None |
 | P11 | Optional, pending | None |
 
@@ -75,3 +75,6 @@ Is phase mein humne actual labels par baseline aur added components compare kiye
 
 ## P08 Summary
 Is phase mein verified mistakes se chhote policy fixes propose kiye. AI sirf bounded suggestion deta hai; labels, benchmark aur production settings ko apni marzi se change nahi kar sakta.
+
+## P09 Summary
+Is phase mein proposed repair ko regression tests ke baad hi activate karna possible hua. Failed proposal reject hota hai; activated change mein issue aaye to poora previous version restore hota hai.
