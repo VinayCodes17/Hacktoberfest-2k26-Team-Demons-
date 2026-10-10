@@ -271,3 +271,41 @@ def get_prediction_trace(engine: Engine, prediction_id: str) -> dict | None:
             "transaction_id": pred.transaction_id,
             "decision": pred.payload,
         }
+
+
+def cancel_job(engine: Engine, job_id: str) -> dict:
+    """Cancel a running job by marking remaining queued/running rows as failed."""
+    with Session(engine) as session:
+        session.connection().exec_driver_sql("BEGIN IMMEDIATE")
+        job = session.get(Job, job_id)
+        if job is None:
+            raise LookupError("JOB_NOT_FOUND")
+        if job.status not in ("queued", "running"):
+            return {"status": job.status, "cancelled": 0}
+        rows = session.scalars(
+            select(JobRow).where(
+                JobRow.job_id == job_id,
+                JobRow.status.in_(["queued", "running"]),
+            )
+        ).all()
+        for row in rows:
+            row.status = "failed"
+            row.lease_owner = None
+            row.lease_expires_at = None
+            # Save a cancelled prediction so the UI shows something
+            session.add(
+                Prediction(
+                    id=str(uuid4()),
+                    job_id=job_id,
+                    transaction_id=row.transaction_id,
+                    payload={
+                        "status": "error",
+                        "proposed_label": None,
+                        "reason_codes": ["CANCELLED_BY_USER"],
+                        "attempts": 0,
+                    },
+                )
+            )
+        job.status = "failed"
+        session.commit()
+        return {"status": "cancelled", "cancelled": len(rows)}

@@ -51,8 +51,20 @@ class Verifier:
 
         # Check evidence paths exist in transaction signals
         signal_names = {s.name for s in transaction.signals if s.status != "unknown" and s.value is not None}
+        # LLM may prefix evidence paths with section headers like "TRANSACTION DATA."
+        # Strip known prefixes so the comparison matches the canonical signal names.
+        _KNOWN_PREFIXES = ("TRANSACTION DATA.", "TRANSACTION_DATA.", "SIGNALS.", "DATA.")
+        cleaned_paths: list[str] = []
         for path in proposal.evidence_paths:
-            # We assume evidence path relates to a signal name or missing path
+            cleaned = path
+            for prefix in _KNOWN_PREFIXES:
+                if path.upper().startswith(prefix.upper()):
+                    cleaned = path[len(prefix):]
+                    break
+            cleaned_paths.append(cleaned)
+        proposal.evidence_paths = cleaned_paths
+
+        for path in proposal.evidence_paths:
             if path not in signal_names:
                 reasons.append(f"UNSUPPORTED_EVIDENCE_PATH:{path}")
 

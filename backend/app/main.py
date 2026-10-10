@@ -15,7 +15,7 @@ from app.ingestion.pipeline import generate_ingestion_report, ingest_workbook
 from app.ingestion.profiler import MAX_FILE_SIZE
 from app.logging_config import setup_logging
 from app.persistence.database import make_engine
-from app.persistence.repository import create_job, get_job, get_job_predictions, get_job_progress
+from app.persistence.repository import cancel_job, create_job, get_job, get_job_predictions, get_job_progress
 from app.readiness import readiness
 from app.review_export import export_review_workbook
 from app.schemas import ErrorResponse, Health, JobCreate, JobView, Readiness
@@ -153,6 +153,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f'attachment; filename="classification-{job_id}.xlsx"'},
         )
+
+    @app.post("/api/v1/jobs/{job_id}/cancel")
+    def stop_job(job_id: str, request: Request):
+        try:
+            result = cancel_job(request.app.state.engine, job_id)
+            return result
+        except LookupError:
+            return JSONResponse(
+                status_code=404,
+                content={"code": "JOB_NOT_FOUND", "message": "No job exists with that identifier."},
+            )
 
     @app.get("/api/v1/predictions/{prediction_id}/trace")
     def prediction_trace(prediction_id: str, request: Request):

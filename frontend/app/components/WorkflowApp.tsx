@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { UploadCloud, FileSpreadsheet, Check, ArrowRight, LoaderCircle, Download, AlertCircle, Search, Rows3, ShieldCheck, RotateCcw } from "lucide-react";
+import { UploadCloud, FileSpreadsheet, Check, ArrowRight, LoaderCircle, Download, AlertCircle, Search, Rows3, ShieldCheck, RotateCcw, XCircle, FilePlus2 } from "lucide-react";
 
 type Stage = "idle" | "uploading" | "inspecting" | "mapping" | "starting" | "classifying" | "complete";
 type Report = {dataset_id: string; mapping_id: string; harness_id: string; selected_sheet: string;
@@ -40,6 +40,7 @@ export default function WorkflowApp() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
   const [downloading, setDownloading] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const busy = ["uploading", "inspecting", "starting", "classifying"].includes(stage);
   const activeStep = ["idle", "uploading"].includes(stage) ? 0 : ["inspecting", "mapping"].includes(stage) ? 1 : stage === "complete" ? 3 : 2;
   const finished = progress ? progress.completed + progress.failed : 0;
@@ -134,8 +135,16 @@ export default function WorkflowApp() {
     } catch (e) { setError(message(e)); } finally { setDownloading(false); }
   }
   function reset() {
-    setJob(null); setFile(null); setReport(null); setResults([]); setProgress(null); setError(""); setStage("idle"); setFilter("all"); setFilename("");
+    setJob(null); setFile(null); setReport(null); setResults([]); setProgress(null); setError(""); setStage("idle"); setFilter("all"); setFilename(""); setCancelling(false);
     try { localStorage.removeItem(SAVED_JOB); } catch {}
+  }
+  async function cancelJob() {
+    if (!job || cancelling) return;
+    setCancelling(true); setError("");
+    try {
+      await read(await fetch(`${API}/jobs/${job}/cancel`, {method: "POST"}));
+      setStage("complete");
+    } catch (e) { setError(message(e)); } finally { setCancelling(false); }
   }
   return <section className="classifier" aria-labelledby="classify-title">
     <div className="classifier-heading"><div><p className="eyebrow">WORKBOOK TO DECISION</p><h2 id="classify-title">Classify a workbook</h2><p>Bring your Excel. Follow the evidence. Take your results with you.</p></div><span className="local-chip"><span /> Processed locally</span></div>
@@ -178,7 +187,7 @@ export default function WorkflowApp() {
           <div className="run-heading"><span className={stage === "complete" ? "success-icon" : "processing-icon"}>{stage === "complete" ? <Check size={22}/> : <LoaderCircle className="spin" size={22}/>}</span><div><h3>{stage === "complete" ? "Your results are ready" : stage === "starting" ? "Starting classification" : "Classifying and checking evidence"}</h3><p>{filename || "Your workbook"}</p></div><strong className="percent-count">{percent}%</strong></div>
           <div className="progress-track" role="progressbar" aria-label="Transactions processed" aria-valuenow={finished} aria-valuemin={0} aria-valuemax={progress?.total || report?.total_rows || 1}><span style={{width: `${percent}%`}}/></div>
           <div className="progress-caption" aria-live="polite"><span>{finished} of {progress?.total || report?.total_rows || "..."} rows processed</span><span>{stage === "complete" ? "All rows saved" : progress?.active_row ? `Working on Excel row ${progress.active_row.physical_row}` : "Waiting for the local worker"}</span></div>
-          {stage !== "complete" && <p className="workflow-note">Local inference can take a little time. Results appear as rows finish. Refreshing this page resumes your saved job.</p>}
+          {stage !== "complete" && <div className="classify-actions"><p className="workflow-note">Local inference can take a little time. Results appear as rows finish. Refreshing this page resumes your saved job.</p><div className="cancel-row"><button className="danger-button" disabled={cancelling} onClick={cancelJob}>{cancelling ? <><LoaderCircle className="spin" size={15}/> Cancelling…</> : <><XCircle size={15}/> Cancel process</>}</button><button className="text-button" onClick={reset}><FilePlus2 size={14}/> New file</button></div></div>}
           <div className="result-counts"><div><ShieldCheck size={19}/><strong>{counts.accepted}</strong><span>Passed checks</span></div><div><Search size={19}/><strong>{counts.review}</strong><span>Needs review</span></div><div><AlertCircle size={19}/><strong>{counts.error}</strong><span>Errors</span></div></div>
           {stage === "complete" && <div className="result-actions"><p>{counts.review || counts.error ? "Some rows need your attention. They are included in the download." : "Inspect the proposals before using them in your accounts."}<small>Includes classifications, explanations and source evidence.</small></p><button className="primary-button" disabled={downloading} onClick={download}>{downloading ? <LoaderCircle className="spin" size={17}/> : <Download size={17}/>} {downloading ? "Preparing download" : "Download Excel results"}</button></div>}
           {results.length > 0 && <><div className="result-filters" aria-label="Filter results">{["all", "accepted", "review", "error"].map(value => <button key={value} aria-pressed={filter === value} className={filter === value ? "selected" : ""} onClick={() => setFilter(value)}>{({all: "All results", accepted: "Passed checks", review: "Needs review", error: "Errors"})[value]}</button>)}</div>
