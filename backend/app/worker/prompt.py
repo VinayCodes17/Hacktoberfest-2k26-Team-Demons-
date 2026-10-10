@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from pydantic import TypeAdapter
 
 ONTOLOGY_PATH = Path(__file__).parent.parent.parent / "ontology" / "workbook-seed.json"
 

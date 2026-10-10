@@ -1,6 +1,7 @@
 import json
-import httpx
 from typing import Any
+
+import httpx
 
 from app.settings import Settings
 

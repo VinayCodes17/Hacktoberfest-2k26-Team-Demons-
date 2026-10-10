@@ -1,3 +1,4 @@
+import asyncio
 import os
 import shutil
 from contextlib import asynccontextmanager
@@ -12,12 +13,11 @@ from fastapi.responses import JSONResponse
 from app.ingestion.pipeline import generate_ingestion_report, ingest_workbook
 from app.logging_config import setup_logging
 from app.persistence.database import make_engine
-from app.persistence.repository import get_job, create_job, get_job_progress, get_job_predictions
+from app.persistence.repository import create_job, get_job, get_job_predictions, get_job_progress
 from app.readiness import readiness
 from app.schemas import ErrorResponse, Health, JobCreate, JobView, Readiness
 from app.settings import Settings
 from app.worker.worker import run_worker
-import asyncio
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -88,7 +88,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return result
 
     @app.post("/api/v1/jobs", response_model=JobView)
-    def start_job(body: JobCreate, request: Request) -> JobView:
+    def start_job(body: JobCreate, request: Request):
         try:
             return create_job(request.app.state.engine, body)
         except Exception as e:
@@ -123,6 +123,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 content={"code": "JOB_NOT_FOUND", "message": "No job exists with that identifier."},
             )
         return get_job_predictions(request.app.state.engine, job_id)
+
+    @app.get("/api/v1/predictions/{prediction_id}/trace")
+    def prediction_trace(prediction_id: str, request: Request):
+        from app.persistence.repository import get_prediction_trace
+
+        trace = get_prediction_trace(request.app.state.engine, prediction_id)
+        if not trace:
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "code": "PREDICTION_NOT_FOUND",
+                    "message": "No prediction exists with that identifier.",
+                },
+            )
+        return trace
 
     @app.post("/api/v1/datasets/profile")
     async def profile_dataset(

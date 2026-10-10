@@ -63,6 +63,17 @@ class FinancialSignal(Contract):
         return self
 
 
+class OntologyEntry(Contract):
+    name: str
+    official_id: str | None = None
+    family: str
+    definition: str
+    source_url: str | None = None
+    source_row: int | None = None
+    boundary: str
+    provenance: str
+
+
 class CanonicalTransaction(Contract):
     id: Identifier
     sources: list[SourceRow] = Field(min_length=1)

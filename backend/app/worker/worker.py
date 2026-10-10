@@ -6,9 +6,9 @@ from sqlalchemy import Engine
 
 from app.persistence.repository import claim_job_row_lease, record_prediction
 from app.settings import Settings
-from app.worker.llm import generate_classification, OllamaAdapterError
+from app.verification.verifier import verify_proposal
+from app.worker.llm import OllamaAdapterError, generate_classification
 from app.worker.prompt import build_prompt
-
 
 logger = logging.getLogger(__name__)
 
@@ -21,18 +21,34 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
 
     row, source_record, job, attempt_number = lease_result
 
+    max_attempts = 2
+
     try:
         # Build prompt using the raw source record and mapping snapshot
-        # For a robust system, we just pass the payload directly and let the LLM map it
-        # using the provided mapping snapshot.
         prompt = build_prompt(transaction=source_record.payload, mapping_snapshot=job.mapping_snapshot)
 
         # Call LLM
-        prediction = generate_classification(prompt, settings)
+        prediction_payload = generate_classification(prompt, settings)
+        decision = verify_proposal(prediction_payload, source_record.payload)
+
+        if decision["status"] == "error" and attempt_number < max_attempts:
+            # Recovery loop
+            recovery_prompt = (
+                prompt + f"\n\nYOUR PREVIOUS OUTPUT HAD ERRORS: {decision['reason_codes']}. PLEASE FIX THEM."
+            )
+            prediction_payload = generate_classification(recovery_prompt, settings)
+            decision = verify_proposal(prediction_payload, source_record.payload)
+            attempt_number += 1
+
+        decision["attempts"] = attempt_number
+        decision["trace_id"] = f"trace-{source_record.id}"
+        decision["harness_id"] = job.harness_id
 
         # Save prediction
-        record_prediction(engine, job.id, source_record.id, attempt_number, payload=prediction, error=None)
-        logger.info(f"Successfully processed transaction {source_record.id} for job {job.id}")
+        record_prediction(engine, job.id, source_record.id, attempt_number, payload=decision, error=None)
+        logger.info(
+            f"Successfully processed transaction {source_record.id} for job {job.id} with status {decision['status']}"
+        )
 
     except OllamaAdapterError as e:
         logger.error(f"Ollama adapter error for transaction {source_record.id}: {e}")

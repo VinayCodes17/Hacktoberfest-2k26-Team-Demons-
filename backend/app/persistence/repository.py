@@ -11,11 +11,11 @@ from app.persistence.models import (
     Dataset,
     HarnessRecord,
     Job,
-    MappingRecord,
     JobRow,
-    SourceRecord,
+    MappingRecord,
     ModelAttempt,
     Prediction,
+    SourceRecord,
 )
 from app.schemas import JobCreate, JobView
 
@@ -59,7 +59,7 @@ def create_job(engine: Engine, request: JobCreate) -> JobView:
                 session.flush()
 
                 # Create a JobRow for each SourceRecord in the dataset
-                from app.persistence.models import SourceRecord, JobRow
+                from app.persistence.models import JobRow, SourceRecord
 
                 source_records = session.scalars(
                     select(SourceRecord).where(SourceRecord.dataset_id == dataset.id)
@@ -84,9 +84,11 @@ def get_job(engine: Engine, job_id: str) -> JobView | None:
 def claim_job_row_lease(
     engine: Engine, worker_id: str, lease_duration_seconds: int = 300
 ) -> tuple[JobRow, SourceRecord, Job, int] | None:
-    from sqlalchemy import select, or_, and_
     from datetime import timedelta
-    from app.persistence.models import JobRow, SourceRecord, ModelAttempt
+
+    from sqlalchemy import and_, or_, select
+
+    from app.persistence.models import JobRow, SourceRecord
 
     with Session(engine) as session:
         session.connection().exec_driver_sql("BEGIN IMMEDIATE")
@@ -160,7 +162,7 @@ def record_prediction(
     payload: dict | None = None,
     error: str | None = None,
 ):
-    from app.persistence.models import JobRow, ModelAttempt, Prediction
+    from app.persistence.models import JobRow
 
     with Session(engine) as session:
         session.connection().exec_driver_sql("BEGIN IMMEDIATE")
@@ -192,6 +194,7 @@ def record_prediction(
 
 def get_job_progress(engine: Engine, job_id: str) -> dict:
     from sqlalchemy import func
+
     from app.persistence.models import JobRow
 
     with Session(engine) as session:
@@ -206,8 +209,21 @@ def get_job_progress(engine: Engine, job_id: str) -> dict:
 
 
 def get_job_predictions(engine: Engine, job_id: str) -> list[dict]:
-    from app.persistence.models import Prediction
 
     with Session(engine) as session:
         preds = session.scalars(select(Prediction).where(Prediction.job_id == job_id)).all()
         return [{"transaction_id": p.transaction_id, "payload": p.payload} for p in preds]
+
+
+def get_prediction_trace(engine: Engine, prediction_id: str) -> dict | None:
+
+    with Session(engine) as session:
+        pred = session.get(Prediction, prediction_id)
+        if not pred:
+            return None
+        return {
+            "id": pred.id,
+            "job_id": pred.job_id,
+            "transaction_id": pred.transaction_id,
+            "decision": pred.payload,
+        }

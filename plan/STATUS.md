@@ -35,9 +35,9 @@ Continue independent scaffolding/contract work when a specific input is missing.
 | P02 | Pending | None |
 | P03 | Pending | None |
 | P04 | Pending | None |
-| P05 | Pending | None |
-| P06 | Pending | None |
-| P07 | Pending | None |
+| P05 | Implemented | `docs/pr-drafts/P05.md` |
+| P06 | Implemented | `docs/pr-drafts/P06.md` |
+| P07 | Implemented | `docs/pr-drafts/P07.md` |
 | P08 | Pending | None |
 | P09 | Pending | None |
 | P10 | Pending | None |
@@ -63,3 +63,12 @@ field dictionaries for mapping/normalization, and build upload/mapping UI.
 Confusion Boundaries and Synthetic Examples are still not integrated; connect
 them in their owning phases without promoting synthetic examples to gold.
 Resolve P00 embedding runtime before claiming P00 complete.
+
+## P05 Summary
+Is phase mein relevant verified examples aur competing voucher definitions model tak pahunchayi. Retrieval ke filters ensure karte hain ki test data ya AI ke apne guesses evidence bank mein na ghusein. (Routing and retrieval interfaces implemented).
+
+## P06 Summary
+Is phase mein prediction ko uske strongest rival se check kiya aur missing evidence ko review reason banaya. Reviewer correction ka proper history hai; model ki agreement ko ground truth nahi maana.
+
+## P07 Summary
+Is phase mein humne actual labels par baseline aur added components compare kiye. Ab pata chalega kis feature se kitna benefit ya cost aaya; synthetic tests aur real accuracy alag report honge.
