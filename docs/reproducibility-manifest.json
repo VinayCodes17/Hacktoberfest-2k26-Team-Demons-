@@ -1,0 +1,27 @@
+{
+  "project_name": "HisabhParakh",
+  "version": "0.1.0",
+  "deployment": {
+    "commit": "f1f32a1",
+    "timestamp": "2026-10-10T14:38:00Z",
+    "environment": "local_docker"
+  },
+  "dependencies": {
+    "backend": "backend/requirements.lock",
+    "frontend": "frontend/package-lock.json",
+    "models": {
+      "text": "google/gemma-4-E4B-it",
+      "embedding": "google/embeddinggemma-2"
+    }
+  },
+  "limitations": [
+    "SQLite must run on local filesystem; network mounts will cause lock errors.",
+    "Only one worker/generation slot is active to prevent resource contention.",
+    "Ollama host connection must be configured if running outside GPU overlay."
+  ],
+  "resource_limits": {
+    "max_context": 4096,
+    "max_p95_latency_ms": 1000
+  },
+  "offline_capable": true
+}
