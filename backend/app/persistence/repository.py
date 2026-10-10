@@ -83,7 +83,7 @@ def get_job(engine: Engine, job_id: str) -> JobView | None:
 
 def claim_job_row_lease(
     engine: Engine, worker_id: str, lease_duration_seconds: int = 300
-) -> tuple[JobRow, SourceRecord, Job, int] | None:
+) -> tuple[JobRow, SourceRecord, Job, int, str | None] | None:
     from datetime import timedelta
 
     from sqlalchemy import and_, or_, select
@@ -138,9 +138,9 @@ def claim_job_row_lease(
                         job_id=row.job_id,
                         transaction_id=row.transaction_id,
                         payload={
-                            "status": "error",
+                            "status": "review",
                             "proposed_label": None,
-                            "reason_codes": ["ATTEMPT_BUDGET_EXHAUSTED"],
+                            "reason_codes": [previous_error, "ATTEMPT_BUDGET_EXHAUSTED"],
                             "attempts": 2,
                         },
                     )
@@ -213,16 +213,21 @@ def record_prediction(
             row.status = "queued"
         else:
             row.status = "completed" if error is None else "failed"
-            final = (
-                payload
-                if error is None
-                else {
-                    "status": "error",
-                    "proposed_label": None,
-                    "reason_codes": [error],
-                    "attempts": attempt_number,
-                }
-            )
+            if error is None:
+                final = payload
+            else:
+                if payload is not None:
+                    final = payload.copy()
+                    final["status"] = "review"
+                    final["reason_codes"] = [error]
+                    final["attempts"] = attempt_number
+                else:
+                    final = {
+                        "status": "review",
+                        "proposed_label": None,
+                        "reason_codes": [error],
+                        "attempts": attempt_number,
+                    }
             session.add(
                 Prediction(id=str(uuid4()), job_id=job_id, transaction_id=transaction_id, payload=final)
             )
@@ -241,7 +246,8 @@ def get_job_progress(engine: Engine, job_id: str) -> dict:
         counts = session.execute(
             select(JobRow.status, func.count()).where(JobRow.job_id == job_id).group_by(JobRow.status)
         ).all()
-        result = {"queued": 0, "running": 0, "completed": 0, "failed": 0}
+        from typing import Any
+        result: dict[str, Any] = {"queued": 0, "running": 0, "completed": 0, "failed": 0}
         for status, count in counts:
             result[status] = count
         result["total"] = sum(result.values())

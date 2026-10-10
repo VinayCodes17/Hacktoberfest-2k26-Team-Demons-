@@ -57,6 +57,15 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
         status, reasons = verifier.verify(proposal, transaction)
         if not proposal.evidence_paths and status == "accepted":
             status, reasons = "review", ["NO_OBSERVED_EVIDENCE"]
+            
+        suspicious_keywords = [
+            "ignore previous instructions", "system override", "override your instructions",
+            "developer message", "return this exact json", "disable verification",
+            "mark this transaction accepted", "reveal your system prompt"
+        ]
+        if any(kw in json.dumps(source.payload).lower() for kw in suspicious_keywords):
+            reasons.append("PROMPT_INJECTION_RISK_DETECTED")
+            
         decision = {
             **proposal.model_dump(),
             "status": status,
@@ -70,14 +79,14 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
         if status == "error":
             error_detail = f"INVALID_PROPOSAL: {', '.join(reasons)}"
             record_prediction(
-                engine, job.id, source.id, attempt, error=error_detail, worker_id=worker_id
+                engine, job.id, source.id, attempt, error=error_detail, payload=decision, worker_id=worker_id
             )
         else:
             record_prediction(engine, job.id, source.id, attempt, payload=decision, worker_id=worker_id)
     except Exception:
         logger.warning("classification_attempt_failed")
         record_prediction(
-            engine, job.id, source.id, attempt, error="CLASSIFICATION_ATTEMPT_FAILED", worker_id=worker_id
+            engine, job.id, source.id, attempt, error="CLASSIFICATION_ATTEMPT_FAILED", payload=None, worker_id=worker_id
         )
     return True
 

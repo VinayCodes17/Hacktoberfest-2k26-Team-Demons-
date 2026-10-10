@@ -47,6 +47,12 @@ unless the row explicitly describes a separate payment/receipt event.
 Debit/Credit alone does not establish the reporting company's buyer/seller role.
 Different narration fields can complement each other; they are not inherently
 contradictory. Cite exact evidence keys from TRANSACTION DATA, not invented keys.
+
+CRITICAL DISTINCTIONS:
+- Order vs Invoice: "Sales Order" and "Purchase Order" are commitments before delivery/payment. Look for "Order Date", "Promised Delivery", or "Expected Arrival". "Sales" and "Purchase" require actual delivery, billing, or GRN references.
+- Returns: "Sales Return" implies items returning from customer (Credit Note). "Purchase Return" implies returning items to supplier (Debit Note or Rejection Out).
+- Material: "Material In" / "Material Out" are internal physical movements without financial sales/purchase logic.
+- Job Work: "Job Work In" (receiving materials to process) vs "Job Work Out" (sending materials to subcontractor).
 Return proposed_label (or null), top_alternative (or null), evidence_paths,
 missing_evidence and rationale_summary (at most 1000 characters).
 Evidence paths must reference observed transaction evidence. Preserve missing,

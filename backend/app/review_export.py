@@ -35,9 +35,14 @@ def export_review_workbook(engine, job_id: str) -> bytes:
         results.title = "Classification results"
 
         def append(sheet, values):
-            sheet.append(
-                [json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v for v in values]
-            )
+            safe_values = []
+            for v in values:
+                if isinstance(v, (dict, list)):
+                    v = json.dumps(v, ensure_ascii=False)
+                if isinstance(v, str) and str(v).startswith(('=', '+', '-', '@')):
+                    v = "'" + str(v)
+                safe_values.append(v)
+            sheet.append(safe_values)
 
         append(
             results,
