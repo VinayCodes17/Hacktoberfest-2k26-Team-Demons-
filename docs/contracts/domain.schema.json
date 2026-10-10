@@ -1,4 +1,61 @@
 {
+  "ActivationEvent": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Id",
+        "type": "string"
+      },
+      "harness_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Harness Id",
+        "type": "string"
+      },
+      "parent_id": {
+        "anyOf": [
+          {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Parent Id"
+      },
+      "action": {
+        "enum": [
+          "activate",
+          "rollback"
+        ],
+        "title": "Action",
+        "type": "string"
+      },
+      "authorizer": {
+        "title": "Authorizer",
+        "type": "string"
+      },
+      "timestamp": {
+        "format": "date-time",
+        "title": "Timestamp",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "harness_id",
+      "parent_id",
+      "action",
+      "authorizer",
+      "timestamp"
+    ],
+    "title": "ActivationEvent",
+    "type": "object"
+  },
   "CanonicalTransaction": {
     "$defs": {
       "FinancialSignal": {
@@ -373,6 +430,66 @@
     "title": "Decision",
     "type": "object"
   },
+  "ErrorCluster": {
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Id",
+        "type": "string"
+      },
+      "confusion_pair": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          }
+        ],
+        "title": "Confusion Pair",
+        "type": "array"
+      },
+      "missing_signals": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Missing Signals",
+        "type": "array"
+      },
+      "contradictory_signals": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Contradictory Signals",
+        "type": "array"
+      },
+      "case_ids": {
+        "items": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "title": "Case Ids",
+        "type": "array"
+      },
+      "support_count": {
+        "title": "Support Count",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "id",
+      "confusion_pair",
+      "case_ids",
+      "support_count"
+    ],
+    "title": "ErrorCluster",
+    "type": "object"
+  },
   "ErrorResponse": {
     "additionalProperties": false,
     "properties": {
@@ -514,6 +631,35 @@
       "source_paths"
     ],
     "title": "FinancialSignal",
+    "type": "object"
+  },
+  "GateConfig": {
+    "additionalProperties": false,
+    "properties": {
+      "min_macro_f1_gain": {
+        "title": "Min Macro F1 Gain",
+        "type": "number"
+      },
+      "max_critical_class_recall_drop": {
+        "title": "Max Critical Class Recall Drop",
+        "type": "number"
+      },
+      "max_p95_latency_ms": {
+        "title": "Max P95 Latency Ms",
+        "type": "integer"
+      },
+      "minimum_label_support": {
+        "title": "Minimum Label Support",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "min_macro_f1_gain",
+      "max_critical_class_recall_drop",
+      "max_p95_latency_ms",
+      "minimum_label_support"
+    ],
+    "title": "GateConfig",
     "type": "object"
   },
   "HarnessBundle": {
@@ -771,6 +917,105 @@
     "title": "ModelProposal",
     "type": "object"
   },
+  "OntologyEntry": {
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string"
+      },
+      "official_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Official Id"
+      },
+      "family": {
+        "title": "Family",
+        "type": "string"
+      },
+      "definition": {
+        "title": "Definition",
+        "type": "string"
+      },
+      "source_url": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Source Url"
+      },
+      "source_row": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Source Row"
+      },
+      "boundary": {
+        "title": "Boundary",
+        "type": "string"
+      },
+      "provenance": {
+        "title": "Provenance",
+        "type": "string"
+      }
+    },
+    "required": [
+      "name",
+      "family",
+      "definition",
+      "boundary",
+      "provenance"
+    ],
+    "title": "OntologyEntry",
+    "type": "object"
+  },
+  "PolicyPatch": {
+    "additionalProperties": false,
+    "properties": {
+      "patch_type": {
+        "enum": [
+          "boundary_definition",
+          "fixed_prompt_section",
+          "retrieval_setting"
+        ],
+        "title": "Patch Type",
+        "type": "string"
+      },
+      "target_path": {
+        "title": "Target Path",
+        "type": "string"
+      },
+      "diff_content": {
+        "title": "Diff Content",
+        "type": "string"
+      }
+    },
+    "required": [
+      "patch_type",
+      "target_path",
+      "diff_content"
+    ],
+    "title": "PolicyPatch",
+    "type": "object"
+  },
   "Readiness": {
     "$defs": {
       "Check": {
@@ -828,6 +1073,149 @@
       "checks"
     ],
     "title": "Readiness",
+    "type": "object"
+  },
+  "RegressionReport": {
+    "additionalProperties": false,
+    "properties": {
+      "candidate_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Candidate Id",
+        "type": "string"
+      },
+      "parent_id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Parent Id",
+        "type": "string"
+      },
+      "passed": {
+        "title": "Passed",
+        "type": "boolean"
+      },
+      "reasons": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Reasons",
+        "type": "array"
+      },
+      "parent_metrics": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "title": "Parent Metrics",
+        "type": "object"
+      },
+      "candidate_metrics": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "title": "Candidate Metrics",
+        "type": "object"
+      }
+    },
+    "required": [
+      "candidate_id",
+      "parent_id",
+      "passed",
+      "reasons",
+      "parent_metrics",
+      "candidate_metrics"
+    ],
+    "title": "RegressionReport",
+    "type": "object"
+  },
+  "RepairCandidate": {
+    "$defs": {
+      "PolicyPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "patch_type": {
+            "enum": [
+              "boundary_definition",
+              "fixed_prompt_section",
+              "retrieval_setting"
+            ],
+            "title": "Patch Type",
+            "type": "string"
+          },
+          "target_path": {
+            "title": "Target Path",
+            "type": "string"
+          },
+          "diff_content": {
+            "title": "Diff Content",
+            "type": "string"
+          }
+        },
+        "required": [
+          "patch_type",
+          "target_path",
+          "diff_content"
+        ],
+        "title": "PolicyPatch",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "maxLength": 128,
+        "minLength": 1,
+        "title": "Id",
+        "type": "string"
+      },
+      "parent_version": {
+        "title": "Parent Version",
+        "type": "string"
+      },
+      "hypothesis": {
+        "title": "Hypothesis",
+        "type": "string"
+      },
+      "supporting_case_ids": {
+        "items": {
+          "maxLength": 128,
+          "minLength": 1,
+          "type": "string"
+        },
+        "title": "Supporting Case Ids",
+        "type": "array"
+      },
+      "patches": {
+        "items": {
+          "$ref": "#/$defs/PolicyPatch"
+        },
+        "maxItems": 1,
+        "title": "Patches",
+        "type": "array"
+      },
+      "expected_benefit": {
+        "title": "Expected Benefit",
+        "type": "string"
+      },
+      "risk": {
+        "title": "Risk",
+        "type": "string"
+      },
+      "paper_reference": {
+        "title": "Paper Reference",
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "parent_version",
+      "hypothesis",
+      "supporting_case_ids",
+      "patches",
+      "expected_benefit",
+      "risk",
+      "paper_reference"
+    ],
+    "title": "RepairCandidate",
     "type": "object"
   },
   "Review": {
