@@ -4,10 +4,11 @@
 
 - Implementation started on 10 October 2026 in the actual project repository.
 - [P00](phases/P00.md): partial; contracts/workbook profile/Gemma smoke verified.
-- Next ready independent phase: [P01](phases/P01.md), typed API and storage.
+- [P01](phases/P01.md): implemented and locally verified (API, storage, UI).
+- Next ready phase: [P02](phases/P02.md), workbook upload/mapping/normalization.
 - Evidence: [implementation status](../docs/implementation-status.md),
   [decisions](../docs/decisions/0001-p00-contracts.md),
-  [local PR draft](../docs/pr-drafts/P00.md) (not published).
+  [P01 local PR draft](../docs/pr-drafts/P01.md) (not published).
 
 ## Unresolved inputs
 
@@ -30,7 +31,7 @@ Continue independent scaffolding/contract work when a specific input is missing.
 | Phase | State | Evidence / PR |
 |---|---|---|
 | P00 | Partial; embedding/runtime work remains | `docs/evidence/`, `docs/pr-drafts/P00.md` |
-| P01 | Ready for independent foundation work | P00 contracts available |
+| P01 | Implemented, locally verified | `docs/evidence/p01-http-smoke.json`, `docs/pr-drafts/P01.md` |
 | P02 | Pending | None |
 | P03 | Pending | None |
 | P04 | Pending | None |
@@ -44,16 +45,21 @@ Continue independent scaffolding/contract work when a specific input is missing.
 
 ## Latest handoff
 
-Changed: `backend/` contracts/importer/smoke tools/tests/dependency freeze;
-`docs/` schemas, evidence, decisions, runbook and draft; root ignore/environment
-template. Source workbook and README unchanged. No commit or remote publication.
+Changed in P01: backend API/config/domain records, SQLite migration/repository,
+redacted logs, schema export and tests; frontend readiness UI/generated types;
+lockfiles, CI, runbook, decisions, local PR draft and README status notice.
+Source workbook unchanged. No commit or remote publication.
 
-Checks: workbook CLI exit 0 (27 categories/500 rows/111 fields); seven tests
-pass; Gemma live smoke exit 0 (22.629 s incl. load, one request); embedding probe
-exit 1 with explicit missing-package/snapshot blockers. Ontology footer import
-bug fixed and tested. No classification accuracy claimed.
+Checks: 26 tests passed (one upstream httpx deprecation warning); Ruff/mypy/pip
+checks passed; migration/drift/restart/concurrent-idempotency checks passed;
+TypeScript and production Next.js build passed; live API/UI HTTP online and
+offline rendering passed. No browser visual QA available. No new model inference
+or classification benchmark. P00 embedding blockers remain.
 
 Use `.venv/Scripts/python.exe`; WindowsApps Python alias fails. Working base:
 `C:/Users/VINAY/AppData/Local/Programs/Python/Python313/python.exe`.
-Exact commands: `docs/runbook.md`. Next: P01 scoped references and foundation;
-resolve P00 embedding runtime before claiming that phase complete.
+Exact commands: `docs/runbook.md`. Next: P02 scoped references, inspect both
+field dictionaries for mapping/normalization, and build upload/mapping UI.
+Confusion Boundaries and Synthetic Examples are still not integrated; connect
+them in their owning phases without promoting synthetic examples to gold.
+Resolve P00 embedding runtime before claiming P00 complete.

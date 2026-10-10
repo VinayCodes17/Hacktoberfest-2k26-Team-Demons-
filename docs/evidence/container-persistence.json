@@ -1,0 +1,7 @@
+{
+  "kind": "synthetic_container_persistence_probe",
+  "started_at": "2026-10-10T05:35:08.039155+00:00",
+  "sqlite_survives_recreation": true,
+  "qdrant_survives_recreation": true,
+  "synthetic_probes_removed": true
+}

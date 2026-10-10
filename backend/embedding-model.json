@@ -1,0 +1,10 @@
+{
+  "model_id": "google/embeddinggemma-2",
+  "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "license": "apache-2.0",
+  "dimension": 768,
+  "device": "cpu",
+  "dtype": "float32",
+  "query_prompt": "SearchQuery",
+  "document_prompt": "Document"
+}

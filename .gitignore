@@ -1,6 +1,11 @@
 .venv/
 __pycache__/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.tsbuildinfo
+test-results/
+playwright-report/
 *.egg-info/
 .env
 .env.*
@@ -12,4 +17,3 @@ storage/
 *.db-*
 node_modules/
 .next/
-

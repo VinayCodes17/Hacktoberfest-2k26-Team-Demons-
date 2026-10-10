@@ -1,0 +1,51 @@
+name: Foundation checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: backend/requirements.lock
+      - run: python -m pip install -r requirements.lock
+      - run: python -m pip check
+      - run: python -m ruff check app tests migrations
+      - run: python -m mypy
+      - run: python -m pytest -q
+      - run: python -m alembic upgrade head
+      - run: python -m alembic check
+      - run: python -m app.export_schemas
+      - run: git diff --exit-code -- ../docs/contracts/openapi.json ../docs/contracts/domain.schema.json
+
+  frontend:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run generate:api
+      - run: git diff --exit-code -- lib/api.generated.ts
+      - run: npm run typecheck
+      - run: npm run build

@@ -1,0 +1,13 @@
+FROM python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_HUB_DISABLE_TELEMETRY=1 OMP_NUM_THREADS=2
+WORKDIR /app/backend
+COPY backend/requirements.lock ./requirements.lock
+COPY backend/requirements-embeddings.txt ./requirements-embeddings.txt
+RUN pip install --no-cache-dir torch==2.14.1+cpu --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.lock -r requirements-embeddings.txt
+COPY backend/ ./
+RUN useradd --uid 10001 --create-home appuser
+USER appuser
+EXPOSE 11435
+CMD ["python", "-m", "uvicorn", "app.embedding_service:create_app", "--factory", "--host", "0.0.0.0", "--port", "11435", "--workers", "1", "--no-access-log"]

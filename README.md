@@ -62,6 +62,13 @@
 
 </div>
 
+**Implementation update — 10 October 2026:** P01 now provides a runnable local
+FastAPI service, SQLite migrations and a Next.js service-readiness UI. P00's
+Gemma smoke passed; embeddings remain pending. Workbook upload/classification
+are next phases. See the [runbook](docs/runbook.md) and
+[implementation status](docs/implementation-status.md) for tested commands and
+evidence. The solution sections below describe the broader target architecture.
+
 ---
 
 ## Executive summary
@@ -813,7 +820,7 @@ A rejected repair is a valid demonstration of the gate. Never stage a successful
 
 ## Configuration and first-run checklist
 
-**Implementation pending.** There are no install, server-start, or Docker commands for this application yet. These are intended settings, not an existing `.env` file:
+**Foundation implemented (P01).** Tested install, migration and local API/UI startup commands are in the [runbook](docs/runbook.md). Root [`.env.example`](.env.example) configures the API. Docker deployment and the full classification flow remain future phases. The settings below describe the broader target configuration:
 
 | Setting | Proposed value / requirement |
 |---|---|
@@ -831,8 +838,8 @@ A rejected repair is a valid demonstration of the gate. Never stage a successful
 | Item | Current state | What resolves it |
 |---|---|---|
 | Gemma 4 E4B identity | **Verified** from Google; selected for this design | Local revision/digest and runtime validation remain pending |
-| Official class names/count | **Not supplied**; earlier materials conflict on count | Authoritative organizer list; derive count automatically |
-| Workbook schema and row unit | **Not supplied** | Representative workbook and sheet/transaction rules |
+| Official class names/count | **27 names confirmed by user as organizer-approved**; workbook seed extracted | Definitions and overlap precedence still require approval |
+| Workbook schema and row unit | **500-row synthetic workbook supplied and profiled**, 111-field organizer view selected | Official grouping and export rules remain unconfirmed |
 | Exact challenge JSON contract | **Not independently confirmed** | Required keys, envelope, row matching, abstention policy |
 | Permitted labeled data | **Not supplied** | Allowed sources, annotation provenance, split policy |
 | Hardware fit and latency | **Not measured** | Full-stack run on target GPU/RAM with pinned settings |
@@ -850,4 +857,4 @@ A rejected repair is a valid demonstration of the gate. Never stage a successful
 
 ### Current scope / final honesty statement
 
-This is **HisabhParakh's proposed hackathon solution design**. The repository provides the submission document and license; application code and evaluation remain to be implemented. Selected model identities and research have primary-source references. Organizer-specific contracts and deployment feasibility remain explicit inputs to validate. No benchmark scores, working screens, or successful repairs are claimed without execution evidence.
+This is **HisabhParakh's hackathon solution design with an implemented P01 foundation**. The repository now includes a local API, database migration, service-readiness UI and contract tests. Classification, evaluation and supervised repair remain future work. See [implementation status](docs/implementation-status.md) for current evidence and blockers; no classification accuracy or successful repair is claimed.

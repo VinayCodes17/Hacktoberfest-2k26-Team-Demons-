@@ -1,0 +1,46 @@
+{
+  "kind": "live_local_HTTP_integration_no_browser_no_inference",
+  "api_health_status": 200,
+  "api_readiness_status": 200,
+  "readiness": {
+    "service_ready": true,
+    "classification_ready": false,
+    "checks": [
+      {
+        "name": "Database",
+        "status": "ready",
+        "message": "Storage is available and up to date."
+      },
+      {
+        "name": "Voucher definitions",
+        "status": "blocked",
+        "message": "Category names are confirmed; definitions and overlap rules still need approval."
+      },
+      {
+        "name": "Local Gemma",
+        "status": "ready",
+        "message": "The pinned Gemma model is installed in Ollama. Generation is not tested by this check."
+      },
+      {
+        "name": "Embeddings",
+        "status": "blocked",
+        "message": "The CPU embedding runtime has not yet been connected and verified."
+      },
+      {
+        "name": "Reference memory",
+        "status": "optional",
+        "message": "No approved examples are connected. Empty reference memory is allowed."
+      },
+      {
+        "name": "Classification worker",
+        "status": "blocked",
+        "message": "The worker will be connected after workbook mapping and classification checks are implemented."
+      }
+    ]
+  },
+  "ui_online_status": 200,
+  "ui_live_checks_rendered": true,
+  "ui_offline_status": 200,
+  "ui_offline_state_rendered": true,
+  "owned_processes_stopped": true
+}

@@ -4,6 +4,7 @@ import importlib.metadata
 import json
 import math
 import re
+import time
 from pathlib import Path
 
 from app.workbook_seed import write_json
@@ -25,6 +26,7 @@ def main():
     parser.add_argument("--snapshot", type=Path, help="Local HF snapshot directory, named by its 40-character revision")
     parser.add_argument("--output", type=Path, default=Path("../docs/evidence/embedding-smoke.json"))
     args = parser.parse_args()
+    started = time.monotonic()
     report = {"model_id": "google/embeddinggemma-2", "status": "blocked", "live_inference": False,
               "device": "cpu", "dtype": "float32", "dimensions": 768, "blockers": []}
     for package in ("torch", "sentence-transformers", "transformers"):
@@ -42,6 +44,7 @@ def main():
             from sentence_transformers import SentenceTransformer
 
             report["revision"] = args.snapshot.name
+            torch.set_num_threads(2)
             model = SentenceTransformer(str(args.snapshot), device="cpu", local_files_only=True,
                                         trust_remote_code=False,
                                         config_kwargs={"vision_config": None, "audio_config": None},
@@ -54,15 +57,18 @@ def main():
                 raise ValueError("Unused modality parameters were loaded")
             if any(p.device.type != "cpu" or p.dtype != torch.float32 for p in model.parameters()):
                 raise ValueError("Parameters are not CPU float32")
-            if not model.prompts.get("query") or not model.prompts.get("document"):
+            if not model.prompts.get("SearchQuery") or not model.prompts.get("Document"):
                 raise ValueError("Checkpoint query/document prefixes missing")
-            report["prefixes"] = {name: model.prompts[name] for name in ("query", "document")}
-            query = model.encode_query(["Synthetic zero amount, currency missing"], normalize_embeddings=True)
-            document = model.encode_document(["Synthetic test document"], normalize_embeddings=True)
+            report["prefixes"] = {name: model.prompts[name] for name in ("SearchQuery", "Document")}
+            query = model.encode(["Synthetic zero amount, currency missing"], prompt_name="SearchQuery", normalize_embeddings=True)
+            document = model.encode(["Synthetic test document"], prompt_name="Document", normalize_embeddings=True)
             validate_vectors([query[0], document[0]])
+            report["parameter_count"] = sum(p.numel() for p in model.parameters())
+            report["norms"] = [float((vector ** 2).sum() ** 0.5) for vector in (query[0], document[0])]
             report.update(status="passed", live_inference=True, unused_modalities_loaded=False)
         except Exception as error:
             report.update(status="failed", error=f"{type(error).__name__}: {error}")
+    report["elapsed_seconds"] = round(time.monotonic() - started, 3)
     write_json(args.output, report)
     print(json.dumps(report))
     raise SystemExit(0 if report["status"] == "passed" else 1)

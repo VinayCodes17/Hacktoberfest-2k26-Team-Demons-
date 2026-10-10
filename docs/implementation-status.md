@@ -1,6 +1,41 @@
 # Implementation status — 10 October 2026
 
-P00 is **partially implemented and verified**. P01 has not started.
+P01 foundation is **implemented and locally verified**. P00 remains partial
+because embedding/full-stack runtime evidence is still missing. Next: P02.
+
+## P01 evidence
+
+- FastAPI health/readiness and blocked job creation; strict shared domain and
+  evaluation schemas; structured logs that omit input data and exception text.
+- Nine SQLite tables with explicit Alembic migration, WAL/FKs/bounded writes,
+  idempotent job persistence and pinned mapping/harness snapshots.
+- Next.js/Tailwind local UI renders real readiness/offline state; TypeScript
+  contracts generated from OpenAPI. No invented predictions or accuracy.
+- Locked dependencies, `.env` validation, synthetic test doubles only in tests,
+  CI definition and [runbook](runbook.md).
+
+| P01 check | Actual result |
+|---|---|
+| `python -m pytest -q` | 26 passed; one upstream Starlette/httpx deprecation warning |
+| `python -m ruff check app tests migrations` | Passed |
+| `python -m mypy` | Passed for 10 scoped source files |
+| `python -m pip check` | No broken dependencies |
+| `python -m alembic upgrade head` / `python -m alembic check` | Passed; no schema drift; repeated migration also tested |
+| Separate-process DB read + concurrent idempotency | Passed in test suite |
+| `npm.cmd run generate:api` / `npm.cmd run typecheck` | Passed |
+| `npm.cmd run build` | Production build passed |
+| `python -m app.verify_stack` | Live API + production UI HTTP checks passed, including API-offline rendering; owned processes stopped |
+
+HTTP report: [p01-http-smoke.json](evidence/p01-http-smoke.json).
+CI is configured, not remotely run. Browser visual/interaction QA was unavailable;
+verification used production HTML/HTTP. No new generation or accuracy benchmark.
+
+Decisions: [0002](decisions/0002-p01-foundation.md).
+Review: [P01 draft](pr-drafts/P01.md), **not published**. No commit/merge.
+Worker leases/reservation/recovery logic belongs to P03; its storage fields and
+constraints exist, but HTTP jobs remain blocked until the real worker is ready.
+
+## Earlier P00 evidence (historical)
 
 Implemented: strict contracts/JSON schemas, read-only workbook importer,
 confirmed category names with separate definition approval, 500-row profile,
@@ -30,9 +65,11 @@ encoders, shared resource fit and remaining compatibility/license evidence.
 Definitions/precedence, submission, trusted-label/split and deadline inputs
 remain separate gates; category names are confirmed by the user.
 
-Next ready work: **P01 typed API and durable storage**, using P00 contracts.
-Its independent work needs neither live embeddings nor approved definitions.
-Follow `plan/phases/P01.md`. Keep P00 partial until runtime checks pass.
+Next ready work: **P02 workbook upload, explicit mapping and normalization**.
+Inspect the supplied field dictionaries and preserve full cell provenance.
+Integrate confusion boundaries in their classification/verification phases;
+synthetic examples remain behavior fixtures, not trusted labels. Keep P00
+partial until embedding/runtime checks pass.
 
 Local review: `pr-drafts/P00.md` (**not published**). No commit or remote PR.
 Existing planning files preserved apart from status handoff.

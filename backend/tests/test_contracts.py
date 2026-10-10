@@ -1,7 +1,13 @@
 import pytest
 from pydantic import ValidationError
 
-from app.contracts import SmokeResponse, Taxonomy, TaxonomyEntry, load_taxonomy, require_classification_taxonomy
+from app.contracts import (
+    SmokeResponse,
+    Taxonomy,
+    TaxonomyEntry,
+    load_taxonomy,
+    require_classification_taxonomy,
+)
 
 
 def seed():
