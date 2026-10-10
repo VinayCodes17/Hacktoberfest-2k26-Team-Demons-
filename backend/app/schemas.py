@@ -148,6 +148,32 @@ class EvaluationRun(Contract):
     metrics: dict[str, float | None] = Field(default_factory=dict)
 
 
+class ErrorCluster(Contract):
+    id: Identifier
+    confusion_pair: tuple[str, str]
+    missing_signals: list[str] = Field(default_factory=list)
+    contradictory_signals: list[str] = Field(default_factory=list)
+    case_ids: list[Identifier]
+    support_count: int
+
+
+class PolicyPatch(Contract):
+    patch_type: Literal["boundary_definition", "fixed_prompt_section", "retrieval_setting"]
+    target_path: str
+    diff_content: str
+
+
+class RepairCandidate(Contract):
+    id: Identifier
+    parent_version: str
+    hypothesis: str
+    supporting_case_ids: list[Identifier]
+    patches: list[PolicyPatch] = Field(max_length=1)  # One delta per candidate
+    expected_benefit: str
+    risk: str
+    paper_reference: str
+
+
 class JobCreate(Contract):
     dataset_id: Identifier
     mapping_id: Identifier

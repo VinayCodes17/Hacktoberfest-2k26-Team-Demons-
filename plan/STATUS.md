@@ -38,7 +38,7 @@ Continue independent scaffolding/contract work when a specific input is missing.
 | P05 | Implemented | `docs/pr-drafts/P05.md` |
 | P06 | Implemented | `docs/pr-drafts/P06.md` |
 | P07 | Implemented | `docs/pr-drafts/P07.md` |
-| P08 | Pending | None |
+| P08 | Implemented | `docs/pr-drafts/P08.md` |
 | P09 | Pending | None |
 | P10 | Pending | None |
 | P11 | Optional, pending | None |
@@ -72,3 +72,6 @@ Is phase mein prediction ko uske strongest rival se check kiya aur missing evide
 
 ## P07 Summary
 Is phase mein humne actual labels par baseline aur added components compare kiye. Ab pata chalega kis feature se kitna benefit ya cost aaya; synthetic tests aur real accuracy alag report honge.
+
+## P08 Summary
+Is phase mein verified mistakes se chhote policy fixes propose kiye. AI sirf bounded suggestion deta hai; labels, benchmark aur production settings ko apni marzi se change nahi kar sakta.
