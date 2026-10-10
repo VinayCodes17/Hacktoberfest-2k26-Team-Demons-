@@ -1,11 +1,11 @@
 {
-  "revision": "workbook-6b22236bbc15",
+  "revision": "workbook-6b22236bbc15-dev-policy-1",
   "source_sha256": "6b22236bbc1508fa85052949592deb5b22818b53d35b9e0db448229e321538fa",
   "source_sheet": "Voucher Ontology",
   "names_confirmed": true,
   "names_authority": "User confirmation on 2026-10-10: organizer confirmed the 27 category names",
-  "definitions_approved": false,
-  "definitions_authority": null,
+  "definitions_approved": true,
+  "definitions_authority": "User approval on 2026-10-10: Approve for development; unresolved overlaps go to review",
   "entries": [
     {
       "name": "Purchase",
@@ -276,6 +276,157 @@
       "source_row": 28,
       "boundary": "Do NOT use as default merely because data is missing: prefer review_required/null when permitted",
       "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    }
+  ],
+  "approval_scope": "development",
+  "unresolved_overlap_action": "review",
+  "confusion_boundaries": [
+    {
+      "candidate_a": "Purchase",
+      "candidate_b": "Purchase Order",
+      "evidence_for_a": "Invoice recorded",
+      "evidence_for_b": "Order is only a purchasing commitment",
+      "source_row": 2
+    },
+    {
+      "candidate_a": "Purchase",
+      "candidate_b": "Receipt Note",
+      "evidence_for_a": "Financial supplier invoice booked",
+      "evidence_for_b": "Warehouse goods received",
+      "source_row": 3
+    },
+    {
+      "candidate_a": "Sales",
+      "candidate_b": "Sales Order",
+      "evidence_for_a": "Customer invoice recorded",
+      "evidence_for_b": "Customer order accepted",
+      "source_row": 4
+    },
+    {
+      "candidate_a": "Sales",
+      "candidate_b": "Delivery Note",
+      "evidence_for_a": "Revenue invoice/document recorded",
+      "evidence_for_b": "Physical shipment/dispatch",
+      "source_row": 5
+    },
+    {
+      "candidate_a": "Payment",
+      "candidate_b": "Contra",
+      "evidence_for_a": "External payee/outgoing settlement",
+      "evidence_for_b": "Same-business cash/bank transfer",
+      "source_row": 6
+    },
+    {
+      "candidate_a": "Receipt",
+      "candidate_b": "Contra",
+      "evidence_for_a": "External payer/incoming settlement",
+      "evidence_for_b": "Same-business cash/bank transfer",
+      "source_row": 7
+    },
+    {
+      "candidate_a": "Purchase Return / Debit Note",
+      "candidate_b": "Rejection Out",
+      "evidence_for_a": "Against recorded purchase; accounting value affected",
+      "evidence_for_b": "Supplier return at receipt stage before purchase invoice",
+      "source_row": 8
+    },
+    {
+      "candidate_a": "Sales Return / Credit Note",
+      "candidate_b": "Rejection In",
+      "evidence_for_a": "Against recorded sales invoice; customer credit",
+      "evidence_for_b": "Return/rejection against delivery stage",
+      "source_row": 9
+    },
+    {
+      "candidate_a": "Stock Journal",
+      "candidate_b": "Physical Stock",
+      "evidence_for_a": "Movement/production/consumption",
+      "evidence_for_b": "Stock count discrepancy correction",
+      "source_row": 10
+    },
+    {
+      "candidate_a": "Material In",
+      "candidate_b": "Receipt Note",
+      "evidence_for_a": "Job-work context, role-dependent inward goods",
+      "evidence_for_b": "Supplier goods received in procurement",
+      "source_row": 11
+    },
+    {
+      "candidate_a": "Material Out",
+      "candidate_b": "Delivery Note",
+      "evidence_for_a": "Job-work context, role-dependent outward goods",
+      "evidence_for_b": "Customer delivery in sales cycle",
+      "source_row": 12
+    },
+    {
+      "candidate_a": "Job Work In Order",
+      "candidate_b": "Job Work Out Order",
+      "evidence_for_a": "Company is job worker receiving assignment",
+      "evidence_for_b": "Company is principal commissioning external worker",
+      "source_row": 13
+    },
+    {
+      "candidate_a": "Attendance",
+      "candidate_b": "Salary / Payroll",
+      "evidence_for_a": "Present/absent or time/production units",
+      "evidence_for_b": "Employee pay computation and deduction",
+      "source_row": 14
+    },
+    {
+      "candidate_a": "Import",
+      "candidate_b": "Purchase",
+      "evidence_for_a": "Cross-border purchase when custom Import label takes precedence",
+      "evidence_for_b": "Underlying purchase voucher; collision requires organizer policy",
+      "source_row": 15
+    },
+    {
+      "candidate_a": "Export",
+      "candidate_b": "Sales",
+      "evidence_for_a": "Cross-border sale when custom Export label takes precedence",
+      "evidence_for_b": "Underlying sales voucher; collision requires organizer policy",
+      "source_row": 16
+    },
+    {
+      "candidate_a": "Expense",
+      "candidate_b": "Payment",
+      "evidence_for_a": "Expense incurred/accrued",
+      "evidence_for_b": "Cash or bank settlement (can be same real event)",
+      "source_row": 17
+    },
+    {
+      "candidate_a": "Advance / Prepayment",
+      "candidate_b": "Payment",
+      "evidence_for_a": "Money paid/received before invoice; advance reference",
+      "evidence_for_b": "Ordinary settlement of an already billed obligation",
+      "source_row": 18
+    },
+    {
+      "candidate_a": "Other / Miscellaneous",
+      "candidate_b": "Review Required",
+      "evidence_for_a": "Use only with explicit organizer definition",
+      "evidence_for_b": "Insufficient evidence must not automatically become Other",
+      "source_row": 19
+    },
+    {
+      "candidate_a": "Salary / Payroll",
+      "candidate_b": "Payment",
+      "evidence_for_a": "Employee payroll period and pay heads/deductions",
+      "evidence_for_b": "Generic external payment independent of payroll processing",
+      "source_row": 20
+    },
+    {
+      "candidate_a": "Journal",
+      "candidate_b": "Expense",
+      "evidence_for_a": "Noncash ledger adjustment/reclassification",
+      "evidence_for_b": "A specific operating expense bill/accrual",
+      "source_row": 21
+    },
+    {
+      "candidate_a": "Receipt",
+      "candidate_b": "Advance / Prepayment",
+      "evidence_for_a": "Collection against existing sales invoice",
+      "evidence_for_b": "Customer funds received before final invoice",
+      "source_row": 22
     }
   ]
 }

@@ -23,7 +23,7 @@ permissions or verified ground truth.
 | G2 | 500 unique, nonblank transaction IDs. Select `Organizer_Ready_Input`, 111 columns, rows 2–501. Identity is hash + sheet + physical row. | Official multi-line/export rules; current policy is for development. |
 | G3 | Typed pending submission contract exists. | Exact envelope, label representation, identity and abstention rules. |
 | G4 | Workbook explicitly marks transactions synthetic/unverified. Zero trusted labels imported. | Reviewer authority, permitted gold sources and grouped splits. |
-| G5 | Gemma live JSON passed, digest pinned, GPU/RAM samples recorded. | Embedding dependencies and pinned snapshot absent; full-stack fit unmeasured. |
+| G5 | Gemma live JSON passed, digest pinned, GPU/RAM samples recorded. | Embedding dependencies and pinned snapshot verified; full-stack fit unmeasured. |
 | G6 | No authoritative deadline/rubric supplied. | Deadline and judging rubric. |
 
 `Transactions_Input` (115 columns), `Agent_Ready_View` (32 columns), and

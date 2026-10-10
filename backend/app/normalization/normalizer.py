@@ -250,6 +250,17 @@ def normalize_row(
     result.total_field_count = len(raw_row.cells)
     populated = 0
 
+    populated_sources: dict[str, list] = {}
+    for source_cell in raw_row.cells:
+        key = mapping.source_to_canonical.get(source_cell.column_header.strip())
+        if key and source_cell.value is not None and source_cell.value != "":
+            populated_sources.setdefault(key, []).append(source_cell)
+    for key, cells in populated_sources.items():
+        if key != "narration" and len(cells) > 1 and len({repr(c.value) for c in cells}) > 1:
+            result.parse_issues.append(
+                f"MULTIPLE_SOURCE_VALUES:{key}:" + ",".join(c.coordinate for c in cells)
+            )
+
     for cell in raw_row.cells:
         if cell.value is None:
             continue
@@ -273,6 +284,8 @@ def normalize_row(
             )
             continue
 
+        signal_name = f"{canonical}[{header}]" if len(populated_sources.get(canonical, [])) > 1 else canonical
+
         # Normalize based on field type
         normalized_value: Any = None
         warning: str | None = None
@@ -293,7 +306,7 @@ def normalize_row(
             if normalized_value is not None:
                 result.signals.append(
                     NormalizedSignal(
-                        canonical_name=canonical,
+                        canonical_name=signal_name,
                         value=normalized_value,
                         original_value=cell.value,
                         source_coordinate=cell.coordinate,
@@ -306,7 +319,7 @@ def normalize_row(
             status = "observed"
             result.signals.append(
                 NormalizedSignal(
-                    canonical_name=canonical,
+                    canonical_name=signal_name,
                     value=normalized_value,
                     original_value=cell.value,
                     source_coordinate=cell.coordinate,
@@ -319,7 +332,7 @@ def normalize_row(
         if normalized_value is not None:
             category = _categorize_field(canonical)
             bucket = getattr(result, category)
-            bucket[canonical] = normalized_value
+            bucket[signal_name] = normalized_value
 
     result.populated_field_count = populated
     return result

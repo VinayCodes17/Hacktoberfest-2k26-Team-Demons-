@@ -24,7 +24,12 @@
       {
         "name": "Embeddings",
         "status": "blocked",
-        "message": "The CPU embedding runtime has not yet been connected and verified."
+        "message": "The pinned CPU embedding service is not available. Start the embeddings Compose profile after caching the model."
+      },
+      {
+        "name": "Qdrant",
+        "status": "ready",
+        "message": "The local vector database is available. Approved retrieval collections are not connected yet."
       },
       {
         "name": "Reference memory",

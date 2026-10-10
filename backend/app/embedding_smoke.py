@@ -59,7 +59,7 @@ def main():
                 str(args.snapshot),
                 device="cpu",
                 local_files_only=True,
-                trust_remote_code=False,
+                trust_remote_code=True,
                 config_kwargs={"vision_config": None, "audio_config": None},
                 model_kwargs={"torch_dtype": torch.float32},
             )

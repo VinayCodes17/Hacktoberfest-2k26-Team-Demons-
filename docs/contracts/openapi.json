@@ -292,6 +292,53 @@
         }
       }
     },
+    "/api/v1/jobs/{job_id}/export.xlsx": {
+      "get": {
+        "summary": "Download Results",
+        "operationId": "download_results_api_v1_jobs__job_id__export_xlsx_get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/v1/predictions/{prediction_id}/trace": {
       "get": {
         "summary": "Prediction Trace",
@@ -390,6 +437,17 @@
     "schemas": {
       "Body_profile_dataset_api_v1_datasets_profile_post": {
         "properties": {
+          "sheet_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sheet Name"
+          },
           "file": {
             "type": "string",
             "contentMediaType": "application/octet-stream",

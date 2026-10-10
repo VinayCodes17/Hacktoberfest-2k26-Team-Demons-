@@ -240,6 +240,7 @@ def generate_ingestion_report(result: IngestionResult) -> dict[str, Any]:
         "target_label_count": result.target_label_count,
         "unique_labels": result.unique_labels,
         "errors": result.errors,
+        "mapping_errors": result.mapping.ambiguous_mappings,
         "warnings": result.warnings,
     }
     if result.transactions:

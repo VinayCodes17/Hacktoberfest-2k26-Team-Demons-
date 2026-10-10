@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-10",
+  "workbook": "01_Balanced_27_Classes.xlsx",
+  "source_sha256": "2b8654982385818cd100108ff81737ff39d79d0042108122a7e18bee3f1a45c6",
+  "rows": 54,
+  "sheet": "Transactions",
+  "upload_http_status": 200,
+  "backend_tests_passed": 120,
+  "root_cause": "Header-level many-to-one mapping rejection on sparse mixed-voucher input",
+  "fix": "Resolve aliases per row; preserve simultaneous source-qualified values and flag differences for review",
+  "blank_answer_regression": "passed",
+  "classification_run_on_full_file": false
+}

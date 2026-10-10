@@ -21,6 +21,14 @@ class TaxonomyEntry(Contract):
     provenance: str
 
 
+class ConfusionBoundary(Contract):
+    candidate_a: str
+    candidate_b: str
+    evidence_for_a: str
+    evidence_for_b: str
+    source_row: int = Field(ge=2)
+
+
 class Taxonomy(Contract):
     revision: str
     source_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
@@ -29,6 +37,9 @@ class Taxonomy(Contract):
     names_authority: str | None = None
     definitions_approved: bool = False
     definitions_authority: str | None = None
+    approval_scope: Literal["development", "organizer"] = "development"
+    unresolved_overlap_action: Literal["review"] = "review"
+    confusion_boundaries: list[ConfusionBoundary] = Field(default_factory=list)
     entries: list[TaxonomyEntry] = Field(min_length=1)
 
     @model_validator(mode="after")

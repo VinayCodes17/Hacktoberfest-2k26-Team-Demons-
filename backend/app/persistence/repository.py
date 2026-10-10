@@ -90,7 +90,7 @@ def claim_job_row_lease(
 
     from app.persistence.models import JobRow, SourceRecord
 
-    with Session(engine) as session:
+    with Session(engine, expire_on_commit=False) as session:
         session.connection().exec_driver_sql("BEGIN IMMEDIATE")
         try:
             now = datetime.now(timezone.utc).isoformat()
@@ -131,10 +131,25 @@ def claim_job_row_lease(
             if attempt_number > 2:
                 # Max retries exceeded
                 row.status = "failed"
+                session.add(
+                    Prediction(
+                        id=str(uuid4()),
+                        job_id=row.job_id,
+                        transaction_id=row.transaction_id,
+                        payload={
+                            "status": "error",
+                            "proposed_label": None,
+                            "reason_codes": ["ATTEMPT_BUDGET_EXHAUSTED"],
+                            "attempts": 2,
+                        },
+                    )
+                )
+                _finish_job(session, row.job_id)
                 session.commit()
-                return claim_job_row_lease(engine, worker_id, lease_duration_seconds)
+                return None
 
             row.status = "running"
+            job.status = "running"
             row.lease_owner = worker_id
             row.lease_expires_at = (
                 datetime.now(timezone.utc) + timedelta(seconds=lease_duration_seconds)
@@ -154,6 +169,14 @@ def claim_job_row_lease(
             raise
 
 
+def _finish_job(session, job_id):
+    session.flush()
+    rows = session.scalars(select(JobRow).where(JobRow.job_id == job_id)).all()
+    job = session.get(Job, job_id)
+    if rows and all(r.status in {"completed", "failed"} for r in rows):
+        job.status = "failed" if any(r.status == "failed" for r in rows) else "completed"
+
+
 def record_prediction(
     engine: Engine,
     job_id: str,
@@ -161,35 +184,49 @@ def record_prediction(
     attempt_number: int,
     payload: dict | None = None,
     error: str | None = None,
+    worker_id: str | None = None,
 ):
-    from app.persistence.models import JobRow
-
     with Session(engine) as session:
         session.connection().exec_driver_sql("BEGIN IMMEDIATE")
-        try:
-            row = session.get(JobRow, (job_id, transaction_id))
-            if not row:
-                return
-
-            attempt = session.get(ModelAttempt, (job_id, transaction_id, attempt_number))
-            if attempt:
-                attempt.outcome = "success" if error is None else f"error: {error}"
-
-            if error is None and payload is not None:
-                row.status = "completed"
-                pred = Prediction(
-                    id=str(uuid4()), job_id=job_id, transaction_id=transaction_id, payload=payload
-                )
-                session.add(pred)
-            else:
-                row.status = "queued"  # Will be marked failed by the lease claiming logic on retry exceed
-
-            row.lease_owner = None
-            row.lease_expires_at = None
-            session.commit()
-        except Exception:
-            session.rollback()
-            raise
+        row = session.get(JobRow, (job_id, transaction_id))
+        attempt = session.get(ModelAttempt, (job_id, transaction_id, attempt_number))
+        if (
+            row is None
+            or attempt is None
+            or attempt.outcome is not None
+            or row.status != "running"
+            or (worker_id is not None and row.lease_owner != worker_id)
+        ):
+            return
+        latest = session.scalars(
+            select(ModelAttempt).where(
+                ModelAttempt.job_id == job_id, ModelAttempt.transaction_id == transaction_id
+            )
+        ).all()
+        if attempt_number != max(a.number for a in latest):
+            return  # A reclaimed lease owns any newer result.
+        attempt.outcome = "success" if error is None else error
+        if error is not None and attempt_number < 2:
+            row.status = "queued"
+        else:
+            row.status = "completed" if error is None else "failed"
+            final = (
+                payload
+                if error is None
+                else {
+                    "status": "error",
+                    "proposed_label": None,
+                    "reason_codes": [error],
+                    "attempts": attempt_number,
+                }
+            )
+            session.add(
+                Prediction(id=str(uuid4()), job_id=job_id, transaction_id=transaction_id, payload=final)
+            )
+        row.lease_owner = None
+        row.lease_expires_at = None
+        _finish_job(session, job_id)
+        session.commit()
 
 
 def get_job_progress(engine: Engine, job_id: str) -> dict:
@@ -205,6 +242,13 @@ def get_job_progress(engine: Engine, job_id: str) -> dict:
         for status, count in counts:
             result[status] = count
         result["total"] = sum(result.values())
+        active = session.execute(
+            select(SourceRecord.physical_row, SourceRecord.sheet)
+            .join(JobRow, JobRow.transaction_id == SourceRecord.id)
+            .where(JobRow.job_id == job_id, JobRow.status == "running")
+            .limit(1)
+        ).first()
+        result["active_row"] = None if active is None else {"physical_row": active[0], "sheet": active[1]}
         return result
 
 
@@ -212,7 +256,7 @@ def get_job_predictions(engine: Engine, job_id: str) -> list[dict]:
 
     with Session(engine) as session:
         preds = session.scalars(select(Prediction).where(Prediction.job_id == job_id)).all()
-        return [{"transaction_id": p.transaction_id, "payload": p.payload} for p in preds]
+        return [{"id": p.id, "transaction_id": p.transaction_id, "payload": p.payload} for p in preds]
 
 
 def get_prediction_trace(engine: Engine, prediction_id: str) -> dict | None:

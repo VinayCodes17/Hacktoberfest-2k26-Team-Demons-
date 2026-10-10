@@ -48,7 +48,7 @@ def test_readiness_distinguishes_service_from_classification(settings, metadata_
         assert body["service_ready"] is True
         assert body["classification_ready"] is False
         checks = {c["name"]: c for c in body["checks"]}
-        assert checks["Voucher definitions"]["status"] == "blocked"
+        assert checks["Voucher definitions"]["status"] == "ready"
         assert checks["Local Gemma"]["status"] == "ready"
         assert checks["Reference memory"]["status"] == "optional"
         assert client.get("/api/v1/jobs/absent").status_code == 404

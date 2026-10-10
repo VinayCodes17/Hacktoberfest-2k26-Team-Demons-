@@ -418,81 +418,58 @@ def build_column_mapping(
     excluded: list[str] = []
     ambiguous: list[str] = []
     warnings: list[str] = []
-
+    groups: dict[str, list[str]] = {}
+    seen: set[str] = set()
     user_mapping = user_mapping_overrides or {}
-
-    # Select the appropriate mapping table
-    if format_type == "format_a":
-        column_map = FORMAT_A_COLUMN_MAP
-    else:
-        # Use Format B map for both format_b and unknown
-        column_map = FORMAT_B_COLUMN_MAP
-
+    aliases = {key.replace("_", " ").casefold(): value for key, value in FORMAT_B_COLUMN_MAP.items()}
+    aliases.update(
+        {
+            "seller supplier": "seller_name",
+            "buyer customer": "buyer_name",
+            "seller tax id": "seller_id",
+            "buyer tax id": "buyer_id",
+            "record id": "transaction_id",
+            "total amount": "invoice_total",
+            "return reference": "original_invoice_number",
+        }
+    )
     for header in headers:
         clean = header.strip()
         if not clean:
             continue
-
-        # CRITICAL: Exclude target/answer columns
         if clean.lower() in TARGET_LABEL_COLUMNS:
             excluded.append(clean)
             continue
-
-        # Check if user provided an override for this specific header
-        if clean in user_mapping:
-            canonical = user_mapping[clean]
-            if canonical in ALL_CANONICAL_FIELDS:
-                if canonical in canonical_to_source:
-                    warnings.append(
-                        f"User override mapped '{clean}' to '{canonical}' which was already mapped."
-                    )
-                canonical_to_source[canonical] = clean
-                source_to_canonical[clean] = canonical
-            else:
-                warnings.append(f"User override mapped '{clean}' to invalid canonical field '{canonical}'.")
-                unmapped.append(clean)
+        if clean in seen:
+            ambiguous.append(f"Duplicate source header '{clean}'; use distinct column names.")
             continue
-
-        if format_type == "format_a":
-            # Format A: direct identity mapping for known canonical fields
-            if clean in ALL_CANONICAL_FIELDS:
-                canonical = clean
-                if canonical in canonical_to_source:
-                    # Duplicate canonical mapping
-                    warnings.append(
-                        f"Duplicate mapping for '{canonical}': "
-                        f"'{canonical_to_source[canonical]}' and '{clean}'"
-                    )
-                else:
-                    canonical_to_source[canonical] = clean
-                    source_to_canonical[clean] = canonical
-            else:
-                unmapped.append(clean)
-        else:
-            # Format B or unknown: look up in the mapping table
-            if clean in column_map:
-                canonical = column_map[clean]
-                if canonical in canonical_to_source:
-                    # Multiple source columns map to same canonical field
-                    # Keep both by noting the ambiguity — the first one wins
-                    # but we record a warning
-                    ambiguous.append(
-                        f"Column '{clean}' maps to '{canonical}' which is already "
-                        f"mapped from '{canonical_to_source[canonical]}'. "
-                        f"Context-dependent; first mapping kept."
-                    )
-                else:
-                    canonical_to_source[canonical] = clean
-                    source_to_canonical[clean] = canonical
-            else:
-                unmapped.append(clean)
-
+        seen.add(clean)
+        canonical = user_mapping.get(clean)
+        if canonical is None:
+            canonical_key = clean.casefold()
+            canonical = (
+                canonical_key
+                if canonical_key in ALL_CANONICAL_FIELDS
+                else aliases.get(clean.replace("_", " ").casefold())
+            )
+        if canonical not in ALL_CANONICAL_FIELDS:
+            unmapped.append(clean)
+            if clean in user_mapping:
+                ambiguous.append(f"Invalid mapping for '{clean}': choose a supported transaction field.")
+            continue
+        source_to_canonical[clean] = canonical
+        groups.setdefault(canonical, []).append(clean)
+    for canonical, sources in groups.items():
+        canonical_to_source[canonical] = " | ".join(sources)
+    shared = sum(len(sources) > 1 for sources in groups.values())
+    if shared:
+        warnings.append(
+            f"{shared} fields have multiple source columns. Populated columns are resolved per row; simultaneous values retain source-qualified evidence and differing values require review."
+        )
     if excluded:
         warnings.append(
-            f"Target label column(s) excluded from mapping: {excluded}. "
-            f"These will NEVER be used for classification input."
+            f"Target label / answer columns excluded from classification input (blank values are allowed): {excluded}."
         )
-
     return ColumnMappingResult(
         format_type=format_type,
         canonical_to_source=canonical_to_source,

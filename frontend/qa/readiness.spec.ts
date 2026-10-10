@@ -8,8 +8,9 @@ test("live readiness, navigation, refresh and responsive layout", async ({ page 
   expect(response?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "A clear view. A checked decision." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Database", exact: true })).toBeVisible();
-  await expect(page.getByText("The local API isn’t connected.")).toHaveCount(0);
-  await expect(page.getByText("Not ready yet", { exact: true })).toBeVisible();
+  await expect(page.getByText("The local API isnâ€™t connected.")).toHaveCount(0);
+  await expect(page.getByText("Worker is polling persisted jobs. Confirm workbook mapping before classification.")).toBeVisible();
+  await expect(page.getByRole("heading", {name: "Classify a workbook"})).toBeVisible();
   await page.getByRole("link", { name: "Check workspace readiness" }).click();
   await expect(page).toHaveURL(/#readiness$/);
   await page.getByRole("link", { name: "Refresh checks" }).focus();

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-10",
+  "backend_tests_passed": 117,
+  "browser_tests_passed": 5,
+  "browser_tests_skipped": 1,
+  "skip_reason": "Duplicate live inference skipped on mobile; mapping and responsive layout tested on both viewports.",
+  "real_browser_checks": [
+    "500-row workbook uploaded through same-origin frontend route",
+    "Organizer_Ready_Input and 111 mappings displayed",
+    "One-row actual Gemma inference completed",
+    "Page refresh resumed persisted job",
+    "Review filter displayed unresolved overlap",
+    "Excel downloaded through browser and reopened with OpenPyXL",
+    "Download retained 1 review row and 111 source cells",
+    "Desktop and mobile screenshots inspected"
+  ],
+  "live_classification_rows": 1,
+  "full_workbook_profile_rows": 500,
+  "full_500_row_classification_run": false,
+  "screenshots": [
+    "storage/qa/workflow-mapping-desktop.png",
+    "storage/qa/workflow-mapping-mobile.png",
+    "storage/qa/workflow-results.png"
+  ],
+  "output_type": "Development review workbook, not official submission"
+}

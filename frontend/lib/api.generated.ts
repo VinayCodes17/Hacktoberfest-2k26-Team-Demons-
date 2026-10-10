@@ -106,6 +106,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_id}/export.xlsx": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Results */
+        get: operations["download_results_api_v1_jobs__job_id__export_xlsx_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/predictions/{prediction_id}/trace": {
         parameters: {
             query?: never;
@@ -146,6 +163,8 @@ export interface components {
     schemas: {
         /** Body_profile_dataset_api_v1_datasets_profile_post */
         Body_profile_dataset_api_v1_datasets_profile_post: {
+            /** Sheet Name */
+            sheet_name?: string | null;
             /** File */
             file: string;
             /**
@@ -450,6 +469,46 @@ export interface operations {
         };
     };
     job_predictions_api_v1_jobs__job_id__predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    download_results_api_v1_jobs__job_id__export_xlsx_get: {
         parameters: {
             query?: never;
             header?: never;

@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-10",
+  "readiness": {
+    "service_ready": true,
+    "classification_ready": true,
+    "checks": [
+      {
+        "name": "Database",
+        "status": "ready",
+        "message": "Storage is available and up to date."
+      },
+      {
+        "name": "Voucher definitions",
+        "status": "ready",
+        "message": "27 voucher definitions approved for development; 21 confusion boundaries. Unresolved overlaps require review."
+      },
+      {
+        "name": "Local Gemma",
+        "status": "ready",
+        "message": "The pinned Gemma model is installed in Ollama. Generation is not tested by this check."
+      },
+      {
+        "name": "Embeddings",
+        "status": "ready",
+        "message": "The pinned CPU encoder passed its startup vector checks."
+      },
+      {
+        "name": "Qdrant",
+        "status": "ready",
+        "message": "The local vector database is available. Approved retrieval collections are not connected yet."
+      },
+      {
+        "name": "Reference memory",
+        "status": "optional",
+        "message": "No approved examples are connected. Empty reference memory is allowed."
+      },
+      {
+        "name": "Classification worker",
+        "status": "ready",
+        "message": "Worker is polling persisted jobs. Confirm workbook mapping before classification."
+      }
+    ]
+  },
+  "embedding_health": {
+    "status": "ready",
+    "model_id": "google/embeddinggemma-2",
+    "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+    "dimensions": 768,
+    "device": "cpu",
+    "dtype": "float32",
+    "unused_modalities_loaded": false
+  },
+  "query_vector_dimensions": 768,
+  "query_vector_norm": 0.9999999827735107,
+  "live_job_id": "58ec9ec2-2443-4d81-a6a3-ad543fc62af6",
+  "row_count": 1,
+  "data_role": "synthetic_unverified",
+  "live_model": "gemma4:e4b-it-q4_K_M",
+  "result_status": "review",
+  "reason_codes": [
+    "UNRESOLVED_CATEGORY_PRECEDENCE",
+    "UNRESOLVED_CONFUSION_BOUNDARY",
+    "MISSING_DECISIVE_EVIDENCE"
+  ],
+  "attempts": 1,
+  "tests": {
+    "backend_passed": 114,
+    "browser_passed": 2
+  },
+  "limits": [
+    "One-row execution smoke, not accuracy benchmark",
+    "Empty trusted reference memory",
+    "Organizer submission still unapproved"
+  ]
+}

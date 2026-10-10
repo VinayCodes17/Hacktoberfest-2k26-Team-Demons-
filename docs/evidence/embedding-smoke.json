@@ -1,14 +1,12 @@
 {
+  "status": "ready",
+  "live_inference": true,
   "model_id": "google/embeddinggemma-2",
-  "status": "blocked",
-  "live_inference": false,
+  "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+  "dimensions": 768,
   "device": "cpu",
   "dtype": "float32",
-  "dimensions": 768,
-  "blockers": [
-    "Package not installed: torch",
-    "Package not installed: sentence-transformers",
-    "Package not installed: transformers",
-    "Pinned local EmbeddingGemma 2 snapshot not supplied"
-  ]
+  "unused_modalities_loaded": false,
+  "vector_norm": 0.9999999827735107,
+  "evidence": "runtime-repair.json"
 }

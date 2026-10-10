@@ -8,7 +8,7 @@ from app.schemas import Check, Readiness
 from app.settings import Settings
 
 
-def readiness(engine: Engine, settings: Settings) -> Readiness:
+def readiness(engine: Engine, settings: Settings, worker_ready: bool = False) -> Readiness:
     checks: list[Check] = []
     try:
         database_ready = schema_ready(engine)
@@ -30,7 +30,10 @@ def readiness(engine: Engine, settings: Settings) -> Readiness:
             Check(
                 name="Voucher definitions",
                 status="ready",
-                message=f"{len(taxonomy.entries)} approved voucher categories.",
+                message=(
+                    f"{len(taxonomy.entries)} voucher definitions approved for {taxonomy.approval_scope}; "
+                    f"{len(taxonomy.confusion_boundaries)} confusion boundaries. Unresolved overlaps require review."
+                ),
             )
         )
     except (ValueError, OSError) as error:
@@ -130,9 +133,15 @@ def readiness(engine: Engine, settings: Settings) -> Readiness:
             ),
             Check(
                 name="Classification worker",
-                status="blocked",
-                message="The worker will be connected after workbook mapping and classification checks are implemented.",
+                status="ready" if worker_ready else "blocked",
+                message="Worker is polling persisted jobs. Confirm workbook mapping before classification."
+                if worker_ready
+                else "Worker is not polling jobs; check database migrations and backend logs.",
             ),
         ]
     )
-    return Readiness(service_ready=database_ready, classification_ready=False, checks=checks)
+    return Readiness(
+        service_ready=database_ready,
+        classification_ready=all(c.status in {"ready", "optional"} for c in checks),
+        checks=checks,
+    )
