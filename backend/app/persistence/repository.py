@@ -125,8 +125,9 @@ def claim_job_row_lease(
             stmt_attempt = select(ModelAttempt).where(
                 ModelAttempt.job_id == row.job_id, ModelAttempt.transaction_id == row.transaction_id
             )
-            attempts = session.scalars(stmt_attempt).all()
+            attempts = list(session.scalars(stmt_attempt).all())
             attempt_number = len(attempts) + 1
+            previous_error = attempts[-1].outcome if attempts else None
 
             if attempt_number > 2:
                 # Max retries exceeded
@@ -163,7 +164,7 @@ def claim_job_row_lease(
             session.commit()
             # session.refresh(row) and others before returning if needed, but we don't need them attached.
             session.expunge_all()
-            return row, source, job, attempt_number
+            return row, source, job, attempt_number, previous_error
         except Exception:
             session.rollback()
             raise

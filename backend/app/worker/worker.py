@@ -35,7 +35,7 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
     lease = claim_job_row_lease(engine, worker_id, lease_duration_seconds=300)
     if not lease:
         return False
-    row, source, job, attempt = lease
+    row, source, job, attempt, previous_error = lease
     try:
         transaction = CanonicalTransaction.model_validate_json(json.dumps(source.payload))
         if transaction.id != source.id or any(
@@ -51,7 +51,7 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
             raise ValueError("HARNESS_MODEL_MISMATCH")
         ontology = OntologyProvider.from_taxonomy(taxonomy)
         verifier = Verifier(ontology)
-        prompt = build_prompt(transaction.model_dump(mode="json"), job.mapping_snapshot, taxonomy)
+        prompt = build_prompt(transaction.model_dump(mode="json"), job.mapping_snapshot, taxonomy, previous_error)
         proposal = ModelProposal.model_validate(generate_classification(prompt, settings))
         proposal.missing_evidence = meaningful_missing(proposal.missing_evidence)
         status, reasons = verifier.verify(proposal, transaction)
