@@ -1,4 +1,5 @@
 """Single CPU encoder, offline weights, bounded inputs and serialized inference."""
+
 import json
 import os
 import threading
@@ -39,12 +40,19 @@ def create_app() -> FastAPI:
         if not snapshot.is_dir() or snapshot.name != manifest["revision"]:
             raise ValueError("Pinned embedding snapshot is missing")
         torch.set_num_threads(2)
-        model = SentenceTransformer(str(snapshot), device="cpu", local_files_only=True,
-                                    trust_remote_code=False,
-                                    config_kwargs={"vision_config": None, "audio_config": None},
-                                    model_kwargs={"torch_dtype": torch.float32})
+        model = SentenceTransformer(
+            str(snapshot),
+            device="cpu",
+            local_files_only=True,
+            trust_remote_code=False,
+            config_kwargs={"vision_config": None, "audio_config": None},
+            model_kwargs={"torch_dtype": torch.float32},
+        )
         config = model[0].auto_model.config
-        if getattr(config, "vision_config", None) is not None or getattr(config, "audio_config", None) is not None:
+        if (
+            getattr(config, "vision_config", None) is not None
+            or getattr(config, "audio_config", None) is not None
+        ):
             raise ValueError("Unused modality encoders remain configured")
         if any("vision_tower" in name or "audio_tower" in name for name, _ in model.named_parameters()):
             raise ValueError("Unused modality encoder parameters loaded")
@@ -53,8 +61,10 @@ def create_app() -> FastAPI:
         for prompt in (manifest["query_prompt"], manifest["document_prompt"]):
             if not model.prompts.get(prompt):
                 raise ValueError("Expected query/document prompt is missing")
-        vectors = [model.encode("Synthetic startup check", prompt_name=manifest[key], normalize_embeddings=True)
-                   for key in ("query_prompt", "document_prompt")]
+        vectors = [
+            model.encode("Synthetic startup check", prompt_name=manifest[key], normalize_embeddings=True)
+            for key in ("query_prompt", "document_prompt")
+        ]
         validate_vectors(vectors)
         app.state.encoder = model
         yield
@@ -64,8 +74,15 @@ def create_app() -> FastAPI:
 
     @app.get("/health")
     def health():
-        return {"status": "ready", "model_id": manifest["model_id"], "revision": manifest["revision"],
-                "dimensions": 768, "device": "cpu", "dtype": "float32", "unused_modalities_loaded": False}
+        return {
+            "status": "ready",
+            "model_id": manifest["model_id"],
+            "revision": manifest["revision"],
+            "dimensions": 768,
+            "device": "cpu",
+            "dtype": "float32",
+            "unused_modalities_loaded": False,
+        }
 
     @app.post("/embed", response_model=EmbedResponse)
     def embed(request: EmbedRequest):

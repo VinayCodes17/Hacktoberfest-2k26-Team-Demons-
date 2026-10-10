@@ -1,7 +1,7 @@
 # Implementation status — 10 October 2026
 
-P01 foundation is **implemented and locally verified**. P00 remains partial
-because embedding/full-stack runtime evidence is still missing. Next: P02.
+P01 and P02 foundation is **implemented and locally verified**. P00 remains partial
+because embedding/full-stack runtime evidence is still missing. Next: P03 (Worker Leases).
 
 ## P01 evidence
 
@@ -34,6 +34,19 @@ Decisions: [0002](decisions/0002-p01-foundation.md).
 Review: [P01 draft](pr-drafts/P01.md), **not published**. No commit/merge.
 Worker leases/reservation/recovery logic belongs to P03; its storage fields and
 constraints exist, but HTTP jobs remain blocked until the real worker is ready.
+
+## P02 evidence
+
+- Implemented safe workbook ingestion with zip bomb / macro protection.
+- Created robust schema detection supporting both synthetic (111 cols) and organizer (169 cols) test case schemas.
+- Implemented column mapping with exclusion of the `Voucher Category` column to prevent label leakage.
+- Handled sparse rows distinguishing False, 0, and Missing values properly.
+- All unit tests for reading, profiling, and mapping pass.
+
+| P02 check | Actual result |
+|---|---|
+| `python -m pytest backend/tests/test_ingestion.py backend/tests/test_normalization.py -q` | 59 passed |
+
 
 ## Earlier P00 evidence (historical)
 

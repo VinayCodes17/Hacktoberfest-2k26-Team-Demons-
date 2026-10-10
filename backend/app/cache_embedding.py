@@ -1,4 +1,5 @@
 """Explicit online setup; runtime model loading remains offline and pinned."""
+
 import json
 import os
 from pathlib import Path
@@ -13,8 +14,10 @@ def main():
 
     manifest = json.loads((ROOT / "backend/embedding-model.json").read_text())
     snapshot = snapshot_download(
-        repo_id=manifest["model_id"], revision=manifest["revision"],
-        cache_dir=ROOT / "storage/huggingface", token=False,
+        repo_id=manifest["model_id"],
+        revision=manifest["revision"],
+        cache_dir=ROOT / "storage/huggingface",
+        token=False,
         allow_patterns=["*.json", "*.safetensors", "*.model", "*.jinja", "README.md"],
         max_workers=2,
     )

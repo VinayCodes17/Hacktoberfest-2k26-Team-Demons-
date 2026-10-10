@@ -1,4 +1,5 @@
 """Bounded HTTP smoke against owned processes; no browser or model inference."""
+
 import json
 import os
 import shutil
@@ -60,13 +61,47 @@ def main():
     flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
     with tempfile.TemporaryFile() as output:
         try:
-            backend = subprocess.Popen([sys.executable, "-m", "uvicorn", "app.main:create_app", "--factory", "--host", "127.0.0.1", "--port", str(backend_port), "--workers", "1", "--no-access-log"], cwd=ROOT / "backend", stdout=output, stderr=output, creationflags=flags)
+            backend = subprocess.Popen(
+                [
+                    sys.executable,
+                    "-m",
+                    "uvicorn",
+                    "app.main:create_app",
+                    "--factory",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    str(backend_port),
+                    "--workers",
+                    "1",
+                    "--no-access-log",
+                ],
+                cwd=ROOT / "backend",
+                stdout=output,
+                stderr=output,
+                creationflags=flags,
+            )
             processes.append(backend)
             health_status, _ = wait_for(api_url + "/api/v1/health")
             readiness_status, data = get(api_url + "/api/v1/readiness")
             readiness = json.loads(data)
             assert health_status == 200 and readiness_status == 200 and readiness["service_ready"]
-            frontend = subprocess.Popen([node, str(ROOT / "frontend/node_modules/next/dist/bin/next"), "start", "--hostname", "127.0.0.1", "--port", str(frontend_port)], cwd=ROOT / "frontend", env={**os.environ, "HISABHPARAKH_API_URL": api_url, "NEXT_TELEMETRY_DISABLED": "1"}, stdout=output, stderr=output, creationflags=flags)
+            frontend = subprocess.Popen(
+                [
+                    node,
+                    str(ROOT / "frontend/node_modules/next/dist/bin/next"),
+                    "start",
+                    "--hostname",
+                    "127.0.0.1",
+                    "--port",
+                    str(frontend_port),
+                ],
+                cwd=ROOT / "frontend",
+                env={**os.environ, "HISABHPARAKH_API_URL": api_url, "NEXT_TELEMETRY_DISABLED": "1"},
+                stdout=output,
+                stderr=output,
+                creationflags=flags,
+            )
             processes.append(frontend)
             online_status, html = wait_for(ui_url)
             assert online_status == 200 and "Service readiness" in html
@@ -77,11 +112,17 @@ def main():
             stop(backend)
             offline_status, offline_html = get(ui_url)
             assert offline_status == 200 and "The local API isn’t connected." in offline_html
-            report = {"kind": "live_local_HTTP_integration_no_browser_no_inference", "api_health_status": health_status,
-                      "api_readiness_status": readiness_status, "readiness": readiness,
-                      "ui_online_status": online_status, "ui_live_checks_rendered": True,
-                      "ui_offline_status": offline_status, "ui_offline_state_rendered": True,
-                      "owned_processes_stopped": True}
+            report = {
+                "kind": "live_local_HTTP_integration_no_browser_no_inference",
+                "api_health_status": health_status,
+                "api_readiness_status": readiness_status,
+                "readiness": readiness,
+                "ui_online_status": online_status,
+                "ui_live_checks_rendered": True,
+                "ui_offline_status": offline_status,
+                "ui_offline_state_rendered": True,
+                "owned_processes_stopped": True,
+            }
             destination = ROOT / "docs/evidence/p01-http-smoke.json"
             destination.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
             print("Live API + production UI HTTP smoke passed; online and offline states verified.")

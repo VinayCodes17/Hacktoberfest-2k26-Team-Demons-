@@ -10,7 +10,9 @@ BACKEND = Path(__file__).resolve().parents[2]
 
 def make_engine(path: Path) -> Engine:
     path.parent.mkdir(parents=True, exist_ok=True)
-    engine = create_engine("sqlite:///" + path.as_posix(), connect_args={"check_same_thread": False, "timeout": 5})
+    engine = create_engine(
+        "sqlite:///" + path.as_posix(), connect_args={"check_same_thread": False, "timeout": 5}
+    )
 
     @event.listens_for(engine, "connect")
     def pragmas(connection, _):

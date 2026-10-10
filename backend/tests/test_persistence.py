@@ -59,7 +59,7 @@ def test_job_survives_new_process_and_keeps_snapshots(database):
         mapping.payload = {"fixture": "changed"}
         session.commit()
         assert session.get(Job, job.id).mapping_snapshot == {"fixture": "mapping-v1"}
-    code = "from pathlib import Path; from app.persistence.database import make_engine; from app.persistence.repository import get_job; import sys; e=make_engine(Path(sys.argv[1])); print(get_job(e,sys.argv[2]).model_dump_json()); e.dispose()"
+    code = "import sys, os; sys.path.insert(0, os.getcwd()); from pathlib import Path; from app.persistence.database import make_engine; from app.persistence.repository import get_job; e=make_engine(Path(sys.argv[1])); print(get_job(e,sys.argv[2]).model_dump_json()); e.dispose()"
     result = subprocess.run([sys.executable, "-c", code, database.url.database, job.id], capture_output=True, text=True, check=True)
     assert json.loads(result.stdout) == job.model_dump()
     assert get_job(database, "missing") is None
@@ -86,7 +86,6 @@ def test_concurrent_idempotency_produces_one_job(database):
 def test_result_uniqueness_and_attempt_limit(database):
     job = create_job(database, request())
     with database.begin() as connection:
-        connection.execute(insert(JobRow).values(job_id=job.id, transaction_id="row", status="queued"))
         connection.execute(insert(Prediction).values(id="p1", job_id=job.id, transaction_id="row", payload={}))
         for number in (1, 2):
             connection.execute(insert(ModelAttempt).values(job_id=job.id, transaction_id="row", number=number, reserved_at="synthetic"))

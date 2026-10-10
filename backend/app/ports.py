@@ -1,4 +1,5 @@
 """Interfaces only; test doubles live in tests, never in application readiness."""
+
 from typing import Protocol
 
 from app.schemas import CanonicalTransaction, ModelProposal

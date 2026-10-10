@@ -1,4 +1,5 @@
 """Validated local-only service configuration. No model loads at import."""
+
 from pathlib import Path
 from typing import Literal
 
@@ -19,7 +20,9 @@ class Settings(BaseSettings):
         default="dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
         pattern=r"^[a-f0-9]{64}$",
     )
-    ollama_base_url: Literal["http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"] = "http://127.0.0.1:11434"
+    ollama_base_url: Literal[
+        "http://127.0.0.1:11434", "http://localhost:11434", "http://host.docker.internal:11434"
+    ] = "http://127.0.0.1:11434"
     qdrant_url: Literal["http://127.0.0.1:6333", "http://qdrant:6333"] = "http://127.0.0.1:6333"
     embedding_url: Literal["http://127.0.0.1:11435", "http://embeddings:11435"] = "http://127.0.0.1:11435"
     gemma_num_ctx: int = Field(default=4096, ge=512, le=4096)

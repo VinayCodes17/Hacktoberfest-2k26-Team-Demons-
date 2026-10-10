@@ -1,4 +1,5 @@
 """Shared domain records. Money is Decimal internally, strings over JSON."""
+
 from datetime import datetime
 from decimal import Decimal
 from typing import Annotated, Literal

@@ -37,8 +37,11 @@ class SourceRecord(Base):
 
 class MappingRecord(Base):
     __tablename__ = "mappings"
-    __table_args__ = (UniqueConstraint("id", "dataset_id"), UniqueConstraint("dataset_id", "revision"),
-                      CheckConstraint("revision >= 1"))
+    __table_args__ = (
+        UniqueConstraint("id", "dataset_id"),
+        UniqueConstraint("dataset_id", "revision"),
+        CheckConstraint("revision >= 1"),
+    )
     id: Mapped[str] = mapped_column(String, primary_key=True)
     dataset_id: Mapped[str] = mapped_column(ForeignKey("datasets.id"))
     revision: Mapped[int] = mapped_column(Integer)

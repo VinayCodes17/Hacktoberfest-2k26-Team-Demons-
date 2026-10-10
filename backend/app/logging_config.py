@@ -1,4 +1,5 @@
 """Allowlisted JSON events: never format request bodies, query strings or errors."""
+
 import json
 import logging
 

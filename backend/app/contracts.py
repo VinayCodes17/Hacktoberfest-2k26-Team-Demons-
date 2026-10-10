@@ -1,4 +1,5 @@
 """Fail-closed P00 contracts; workbook text never confers approval."""
+
 from pathlib import Path
 from typing import Literal
 

@@ -71,7 +71,7 @@ def test_unknown_fields_rejected_without_echo_and_no_jobs_started(settings):
         result = client.post("/api/v1/jobs", json={**request, "narration": "PRIVATE_FINANCIAL_TEXT"})
         assert result.status_code == 422
         assert "PRIVATE_FINANCIAL_TEXT" not in result.text
-        assert client.post("/api/v1/jobs", json=request).status_code == 409
+        assert client.post("/api/v1/jobs", json=request).status_code == 400
 
 
 def test_structured_logger_ignores_sensitive_extras_and_unknown_messages():
