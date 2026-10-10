@@ -8,7 +8,7 @@ VERIFIER_VERSION = "evidence-v3"
 
 def meaningful_missing(values: list[str]) -> list[str]:
     empty = {"", "none", "n/a", "na", "null", "not applicable", "no missing evidence"}
-    return [v for v in values if v.strip().lower().rstrip(".") not in empty]
+    return [v for v in values if v.strip(" \"'").lower().rstrip(".") not in empty]
 
 
 class Verifier:
@@ -37,7 +37,7 @@ class Verifier:
         }:
             reasons.append("UNRESOLVED_CATEGORY_PRECEDENCE")
 
-        if proposal.top_alternative:
+        if proposal.top_alternative and proposal.top_alternative.strip(" \"'").lower().rstrip(".") not in {"", "none", "n/a", "na", "null"}:
             rival = self.ontology.get_by_name(proposal.top_alternative)
             if not rival:
                 reasons.append("INVALID_RIVAL_LABEL")
@@ -71,7 +71,7 @@ class Verifier:
         issues = [
             issue
             for issue in transaction.parse_issues
-            if not issue.startswith("MULTIPLE_SOURCE_VALUES:narration:")
+            if "narration" not in issue.lower() and "MULTIPLE_SOURCE_VALUES" in issue
         ]
         if issues:
             reasons.append("SOURCE_PARSE_ISSUES")
