@@ -1,0 +1,14 @@
+{
+  "model_id": "google/embeddinggemma-2",
+  "status": "blocked",
+  "live_inference": false,
+  "device": "cpu",
+  "dtype": "float32",
+  "dimensions": 768,
+  "blockers": [
+    "Package not installed: torch",
+    "Package not installed: sentence-transformers",
+    "Package not installed: transformers",
+    "Pinned local EmbeddingGemma 2 snapshot not supplied"
+  ]
+}

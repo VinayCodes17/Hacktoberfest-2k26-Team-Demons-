@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "record_id": {
+      "const": "SYNTHETIC-SMOKE-001",
+      "title": "Record Id",
+      "type": "string"
+    },
+    "amount": {
+      "const": "0.00",
+      "title": "Amount",
+      "type": "string"
+    },
+    "missing_currency": {
+      "const": true,
+      "title": "Missing Currency",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "record_id",
+    "amount",
+    "missing_currency"
+  ],
+  "title": "SmokeResponse",
+  "type": "object"
+}

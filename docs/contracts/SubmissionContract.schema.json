@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "status": {
+      "const": "pending",
+      "default": "pending",
+      "title": "Status",
+      "type": "string"
+    },
+    "envelope": {
+      "default": null,
+      "title": "Envelope",
+      "type": "null"
+    },
+    "abstention_policy": {
+      "default": null,
+      "title": "Abstention Policy",
+      "type": "null"
+    },
+    "row_identity_policy": {
+      "default": null,
+      "title": "Row Identity Policy",
+      "type": "null"
+    },
+    "reason": {
+      "default": "Exact organizer submission schema has not been supplied",
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "title": "SubmissionContract",
+  "type": "object"
+}

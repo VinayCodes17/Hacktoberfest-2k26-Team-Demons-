@@ -1,0 +1,281 @@
+{
+  "revision": "workbook-6b22236bbc15",
+  "source_sha256": "6b22236bbc1508fa85052949592deb5b22818b53d35b9e0db448229e321538fa",
+  "source_sheet": "Voucher Ontology",
+  "names_confirmed": true,
+  "names_authority": "User confirmation on 2026-10-10: organizer confirmed the 27 category names",
+  "definitions_approved": false,
+  "definitions_authority": null,
+  "entries": [
+    {
+      "name": "Purchase",
+      "official_id": null,
+      "family": "Purchasing",
+      "definition": "Supplier goods/services purchase invoice recorded",
+      "source_url": "https://help.tallysolutions.com/purchase-process-in-tallyprime/",
+      "source_row": 2,
+      "boundary": "Invoice recognition is different from placing order or physical receipt; import may use purchase as base voucher",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Sales",
+      "official_id": null,
+      "family": "Selling",
+      "definition": "Customer sale invoice issued/recognized",
+      "source_url": "https://help.tallysolutions.com/tally-prime/sales-process-tally/sales-process-tally/",
+      "source_row": 3,
+      "boundary": "Invoice recognized, not just an accepted order or dispatch",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Purchase Return / Debit Note",
+      "official_id": null,
+      "family": "Purchasing",
+      "definition": "Return of purchased goods or downward purchase-value adjustment with accounting impact",
+      "source_url": "https://help.tallysolutions.com/purchases-faq/",
+      "source_row": 4,
+      "boundary": "Debit note adjusts purchase/party accounting; rejection out before purchase may be inventory-only",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Sales Return / Credit Note",
+      "official_id": null,
+      "family": "Selling",
+      "definition": "Customer returns invoiced sale or recorded sales value is reduced",
+      "source_url": "https://help.tallysolutions.com/tally-prime/sales-process-tally/sales-process-tally/",
+      "source_row": 5,
+      "boundary": "Credit note changes accounting for billed sale; rejection in before sales invoice is operational",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Payment",
+      "official_id": null,
+      "family": "Banking",
+      "definition": "Disbursement of money to an external party or for an obligation",
+      "source_url": "https://help.tallysolutions.com/tally-prime/accounting/payments-and-receipts-tally/",
+      "source_row": 6,
+      "boundary": "External settlement; payment purpose may overlap custom Expense or Advance labels",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Receipt",
+      "official_id": null,
+      "family": "Banking",
+      "definition": "Money received into company cash/bank from external party",
+      "source_url": "https://help.tallysolutions.com/tally-prime/accounting/payments-and-receipts-tally/",
+      "source_row": 7,
+      "boundary": "Receipt of cash is distinct from posting a sales invoice",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Contra",
+      "official_id": null,
+      "family": "Banking",
+      "definition": "Transfer within business-owned cash and bank accounts",
+      "source_url": "https://help.tallysolutions.com/tally-prime/accounting/accounting-entry-tally/",
+      "source_row": 8,
+      "boundary": "Internal ownership distinguishes it from payment to an external counterparty",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Journal",
+      "official_id": null,
+      "family": "Accounting adjustment",
+      "definition": "Debit/credit accounting adjustment without a more specific primary voucher event",
+      "source_url": "https://help.tallysolutions.com/tally-prime/accounting/accounting-entry-tally/",
+      "source_row": 9,
+      "boundary": "Accounting adjustment vs specific inventory transfer or cash payment",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Salary / Payroll",
+      "official_id": null,
+      "family": "Human resources",
+      "definition": "Employee wage/salary accrual or payroll settlement",
+      "source_url": "https://help.tallysolutions.com/tally-prime/payroll-transactions/salary-payment-tally/",
+      "source_row": 10,
+      "boundary": "Payroll calculation/accrual distinct from attendance recording or generic payment",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Attendance",
+      "official_id": null,
+      "family": "Human resources",
+      "definition": "Employee attendance/leave/overtime/production units recorded",
+      "source_url": "https://help.tallysolutions.com/create-attendance-or-production-vouchers-payroll-tally/",
+      "source_row": 11,
+      "boundary": "Records units and attendance, not salary payment",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Purchase Order",
+      "official_id": null,
+      "family": "Purchasing",
+      "definition": "Buyer commits/requests goods or services from supplier",
+      "source_url": "https://help.tallysolutions.com/purchase-order-tally/",
+      "source_row": 12,
+      "boundary": "Order precedes goods receipt/invoice and does not prove either occurred",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Sales Order",
+      "official_id": null,
+      "family": "Selling",
+      "definition": "Customer order accepted prior to delivery/invoicing",
+      "source_url": "https://help.tallysolutions.com/sales-order-tally/",
+      "source_row": 13,
+      "boundary": "Order acknowledgement, not delivery or sales invoice",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Receipt Note",
+      "official_id": null,
+      "family": "Inventory receipt",
+      "definition": "Incoming goods physically received from supplier before/alongside purchase processing",
+      "source_url": "https://help.tallysolutions.com/tally/inventory-entry-tally/",
+      "source_row": 14,
+      "boundary": "Goods receipt event, not necessarily a supplier invoice; Material In often job-work context",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Delivery Note",
+      "official_id": null,
+      "family": "Inventory dispatch",
+      "definition": "Goods dispatched/delivered to customer independent of sale invoice stage",
+      "source_url": "https://help.tallysolutions.com/sales-order-tally/",
+      "source_row": 15,
+      "boundary": "Physical delivery stage, not necessarily revenue recognition",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Rejection In",
+      "official_id": null,
+      "family": "Inventory rejection",
+      "definition": "Goods rejected/returned by customer at delivery-note stage before sales invoicing",
+      "source_url": "https://help.tallysolutions.com/sales-order-tally/",
+      "source_row": 16,
+      "boundary": "Pre-invoice rejection is distinct from credited return of already invoiced sale",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Rejection Out",
+      "official_id": null,
+      "family": "Inventory rejection",
+      "definition": "Goods rejected/returned to supplier at receipt-note stage before purchase invoicing",
+      "source_url": "https://help.tallysolutions.com/purchases-faq/",
+      "source_row": 17,
+      "boundary": "Pre-invoice inventory rejection vs debit note on accounted purchase",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Stock Journal",
+      "official_id": null,
+      "family": "Inventory transfer/production",
+      "definition": "Internal stock transfer or raw material consumption / production movement",
+      "source_url": "https://help.tallysolutions.com/tally-prime/inventory/inventory-and-manufacturing-faq/",
+      "source_row": 18,
+      "boundary": "Moves or transforms stock; does not merely correct counted quantity",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Physical Stock",
+      "official_id": null,
+      "family": "Inventory count",
+      "definition": "Physical inventory count reconciled with recorded book quantity",
+      "source_url": "https://help.tallysolutions.com/tally-prime/inventory-reports/physical-stock-register-tally/",
+      "source_row": 19,
+      "boundary": "Corrects stock to counted quantity, not a shipment or stock transfer",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Material In",
+      "official_id": null,
+      "family": "Job work movement",
+      "definition": "Job-work related material physically received by reporting company",
+      "source_url": "https://help.tallysolutions.com/job-worker/",
+      "source_row": 20,
+      "boundary": "Could be raw materials received by job worker OR finished goods received by principal",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Material Out",
+      "official_id": null,
+      "family": "Job work movement",
+      "definition": "Job-work related material physically sent out from reporting company",
+      "source_url": "https://help.tallysolutions.com/principal-manufacturer/",
+      "source_row": 21,
+      "boundary": "Could be raw materials sent by principal OR finished goods dispatched by job worker",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Job Work In Order",
+      "official_id": null,
+      "family": "Job work order",
+      "definition": "Job worker receives order to process or manufacture for a principal",
+      "source_url": "https://help.tallysolutions.com/job-worker/",
+      "source_row": 22,
+      "boundary": "Perspective is job worker accepting work; material receipt is a separate voucher",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Job Work Out Order",
+      "official_id": null,
+      "family": "Job work order",
+      "definition": "Principal manufacturer assigns processing/manufacturing job to an external worker",
+      "source_url": "https://help.tallysolutions.com/principal-manufacturer/",
+      "source_row": 23,
+      "boundary": "Perspective is principal sending work out; raw material dispatch is separate event",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Import",
+      "official_id": null,
+      "family": "International trade",
+      "definition": "Purchase of goods/services from foreign supplier; import transaction context",
+      "source_url": "https://help.tallysolutions.com/tally-prime/gst-purchase/india-gst-record-the-import-of-goods-under-gst-tally/",
+      "source_row": 24,
+      "boundary": "Tally commonly books imports in Purchase voucher; organizer must define if Import overrides Purchase",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Export",
+      "official_id": null,
+      "family": "International trade",
+      "definition": "Sale of goods/services to foreign customer; export transaction context",
+      "source_url": "https://help.tallysolutions.com/create-sales-voucher-with-foreign-currency-and-print-invoice-in-tallyprime/",
+      "source_row": 25,
+      "boundary": "Tally often books exports in Sales voucher; organizer must define if Export overrides Sales",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Expense",
+      "official_id": null,
+      "family": "Operating expenses",
+      "definition": "Business expense incurred or recognized such as rent/utilities/travel",
+      "source_url": "https://help.tallysolutions.com/record-expenses/",
+      "source_row": 26,
+      "boundary": "Expense is economic nature; vendor cash payment may separately be Payment voucher",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Advance / Prepayment",
+      "official_id": null,
+      "family": "Advance payments",
+      "definition": "Money paid or received before final invoice, or an expense prepaid for future periods",
+      "source_url": "https://docs.frappe.io/erpnext/advance-payment-entry",
+      "source_row": 27,
+      "boundary": "Advance is a purpose/timing overlay on Payment or Receipt; distinguish prepaid expense recognition",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    },
+    {
+      "name": "Other / Miscellaneous",
+      "official_id": null,
+      "family": "Fallback",
+      "definition": "Transaction not safely covered by allowed categories once sufficient data and organizer rules are considered",
+      "source_url": "https://help.tallysolutions.com/tally-prime/accounting/accounting-entry-tally/",
+      "source_row": 28,
+      "boundary": "Do NOT use as default merely because data is missing: prefer review_required/null when permitted",
+      "provenance": "Official documentation interpreted; not verbatim text or confirmed organizer label policy"
+    }
+  ]
+}

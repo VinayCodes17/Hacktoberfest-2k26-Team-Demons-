@@ -1,0 +1,128 @@
+{
+  "$defs": {
+    "TaxonomyEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "official_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Official Id"
+        },
+        "family": {
+          "title": "Family",
+          "type": "string"
+        },
+        "definition": {
+          "title": "Definition",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "source_row": {
+          "minimum": 2,
+          "title": "Source Row",
+          "type": "integer"
+        },
+        "boundary": {
+          "title": "Boundary",
+          "type": "string"
+        },
+        "provenance": {
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "family",
+        "definition",
+        "source_url",
+        "source_row",
+        "boundary",
+        "provenance"
+      ],
+      "title": "TaxonomyEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "revision": {
+      "title": "Revision",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "source_sheet": {
+      "default": "Voucher Ontology",
+      "title": "Source Sheet",
+      "type": "string"
+    },
+    "names_confirmed": {
+      "default": false,
+      "title": "Names Confirmed",
+      "type": "boolean"
+    },
+    "names_authority": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Names Authority"
+    },
+    "definitions_approved": {
+      "default": false,
+      "title": "Definitions Approved",
+      "type": "boolean"
+    },
+    "definitions_authority": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Definitions Authority"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/TaxonomyEntry"
+      },
+      "minItems": 1,
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "revision",
+    "source_sha256",
+    "entries"
+  ],
+  "title": "Taxonomy",
+  "type": "object"
+}

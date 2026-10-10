@@ -1,0 +1,77 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "source_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "sheet": {
+      "title": "Sheet",
+      "type": "string"
+    },
+    "header_row": {
+      "minimum": 1,
+      "title": "Header Row",
+      "type": "integer"
+    },
+    "first_data_row": {
+      "minimum": 2,
+      "title": "First Data Row",
+      "type": "integer"
+    },
+    "last_data_row": {
+      "minimum": 2,
+      "title": "Last Data Row",
+      "type": "integer"
+    },
+    "row_unit": {
+      "const": "physical_row",
+      "default": "physical_row",
+      "title": "Row Unit",
+      "type": "string"
+    },
+    "identity": {
+      "const": "sha256:sheet:physical_row",
+      "default": "sha256:sheet:physical_row",
+      "title": "Identity",
+      "type": "string"
+    },
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "data_role": {
+      "const": "synthetic_unverified",
+      "default": "synthetic_unverified",
+      "title": "Data Role",
+      "type": "string"
+    },
+    "official_row_policy_confirmed": {
+      "default": false,
+      "title": "Official Row Policy Confirmed",
+      "type": "boolean"
+    },
+    "excluded_parallel_views": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Excluded Parallel Views",
+      "type": "array"
+    }
+  },
+  "required": [
+    "source_sha256",
+    "sheet",
+    "header_row",
+    "first_data_row",
+    "last_data_row",
+    "columns",
+    "excluded_parallel_views"
+  ],
+  "title": "WorkbookContract",
+  "type": "object"
+}

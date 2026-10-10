@@ -1,0 +1,7 @@
+{
+  "status": "pending",
+  "envelope": null,
+  "abstention_policy": null,
+  "row_identity_policy": null,
+  "reason": "Exact organizer submission schema has not been supplied"
+}
