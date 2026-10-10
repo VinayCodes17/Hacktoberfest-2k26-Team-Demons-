@@ -174,8 +174,10 @@ def _finish_job(session, job_id):
     session.flush()
     rows = session.scalars(select(JobRow).where(JobRow.job_id == job_id)).all()
     job = session.get(Job, job_id)
-    if rows and all(r.status in {"completed", "failed"} for r in rows):
-        job.status = "failed" if any(r.status == "failed" for r in rows) else "completed"
+    if not rows or not job:
+        return
+    if all(r.status in {"completed", "failed"} for r in rows):
+        job.status = "completed"
 
 
 def record_prediction(

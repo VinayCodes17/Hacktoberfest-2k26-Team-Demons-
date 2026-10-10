@@ -68,8 +68,9 @@ def process_job_row(engine: Engine, settings: Settings, worker_id: str):
             "prompt_version": "direct-v3",
         }
         if status == "error":
+            error_detail = f"INVALID_PROPOSAL: {', '.join(reasons)}"
             record_prediction(
-                engine, job.id, source.id, attempt, error="INVALID_PROPOSAL", worker_id=worker_id
+                engine, job.id, source.id, attempt, error=error_detail, worker_id=worker_id
             )
         else:
             record_prediction(engine, job.id, source.id, attempt, payload=decision, worker_id=worker_id)

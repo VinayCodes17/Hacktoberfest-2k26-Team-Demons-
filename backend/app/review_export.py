@@ -38,10 +38,6 @@ def export_review_workbook(engine, job_id: str) -> bytes:
             sheet.append(
                 [json.dumps(v, ensure_ascii=False) if isinstance(v, (dict, list)) else v for v in values]
             )
-            # Workbook/model text is inert even if it begins with =, +, - or @.
-            for cell in sheet[sheet.max_row]:
-                if isinstance(cell.value, str):
-                    cell.data_type = "s"
 
         append(
             results,
@@ -106,6 +102,12 @@ def export_review_workbook(engine, job_id: str) -> bytes:
         for sheet in workbook:
             sheet.freeze_panes = "A2"
             sheet.auto_filter.ref = sheet.dimensions
+            # Make text inert in a fast single pass
+            for row in sheet.iter_rows():
+                for cell in row:
+                    if isinstance(cell.value, str):
+                        cell.data_type = "s"
+            
             for cell in sheet[1]:
                 cell.font = Font(color="FFFFFF", bold=True)
                 cell.fill = PatternFill("solid", fgColor="2F6654")
